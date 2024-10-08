@@ -22,7 +22,10 @@ public class FaceUser : MonoBehaviour
         {
             Vector3 direction = mainCamera.transform.position - transform.position;
             direction.y = 0; // Keep the object upright
-            transform.rotation = Quaternion.LookRotation(direction);
+            if (direction.sqrMagnitude > 0.01f)
+            {
+                transform.rotation = Quaternion.LookRotation(direction);
+            }
         }
     }
 }
