@@ -69,7 +69,20 @@ public class Receiver : MonoBehaviour
     async void Start()
     {
         Debug.Log("Hello, World!");
-        savePath = Application.persistentDataPath + "/TransferDirectory/received.obj"; // TODO: MAKE IT CREATE TransferDirectory IF IT DOESN'T EXIST!!
+        // TODO: MAKE IT CREATE TransferDirectory IF IT DOESN'T EXIST!!
+        string directoryPath = Path.Combine(Application.persistentDataPath, "TransferDirectory");
+        
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+            Debug.Log("Created directory: " +  directoryPath);
+        }
+
+       
+        string uniqueFileName = "received_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".obj";
+        savePath = Path.Combine(directoryPath, uniqueFileName);
+        Debug.Log("File saved as: " + savePath);
+
         await ReceiveFileAsync(savePath, port);
     }
 
