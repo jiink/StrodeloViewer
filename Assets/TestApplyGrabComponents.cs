@@ -6,27 +6,23 @@ using Oculus.Interaction.HandGrab;
 
 public class TestApplyGrabComponents : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
+        // These components make it so you can grab the object with your hands or controllers.
         Rigidbody rb = gameObject.AddComponent<Rigidbody>();
         rb.useGravity = false;
         rb.angularDrag = 100f; // Don't want it flying away
         rb.drag = 100f;
-
         Grabbable grabbable = gameObject.AddComponent<Grabbable>();
         grabbable.InjectOptionalRigidbody(rb);
-
         GrabInteractable grabInteractable = gameObject.AddComponent<GrabInteractable>();
         grabInteractable.InjectOptionalPointableElement(grabbable);
         grabInteractable.InjectRigidbody(rb);
-
         HandGrabInteractable handGrabInteractable = gameObject.AddComponent<HandGrabInteractable>();
         handGrabInteractable.InjectOptionalPointableElement(grabbable);
         handGrabInteractable.InjectRigidbody(rb);
     }
 
-    // Update is called once per frame
     void Update()
     {
         
