@@ -7,11 +7,11 @@ using System.Net.Sockets;
 
 public class ShowIP : MonoBehaviour
 {
-    TextMeshPro textMeshPro;
+    TextMeshProUGUI textMeshPro;
     // Start is called before the first frame update
     void Start()
     {
-        textMeshPro = GetComponent<TextMeshPro>(); // Get the TextMeshPro component
+        textMeshPro = GetComponent<TextMeshProUGUI>(); // Get the TextMeshPro component
         string localIP = "";
         IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
         foreach (IPAddress ip in host.AddressList)
