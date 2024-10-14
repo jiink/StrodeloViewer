@@ -8,6 +8,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Assimp;
 using System.Linq;
+using Oculus.Interaction;
+using Oculus.Interaction.HandGrab;
 
 public class Receiver : MonoBehaviour
 {
@@ -20,6 +22,8 @@ public class Receiver : MonoBehaviour
     {
         AssimpContext importer = new AssimpContext();
         Scene model = importer.ImportFile(filePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+
+        
 
         foreach (var mesh in model.Meshes)
         {
@@ -39,6 +43,26 @@ public class Receiver : MonoBehaviour
 
             // Assign a material to the mesh renderer
             meshRenderer.material = new UnityEngine.Material(Shader.Find("Standard"));
+
+            //Add rigidbody to object
+            Rigidbody rb = newObject.AddComponent<Rigidbody>();
+            rb.useGravity = false;
+            rb.angularDrag = 100f; // Don't want it flying away
+            rb.drag = 100f;
+
+            //Add grabbable component and inject rigidbody
+            Grabbable grabbable = newObject.AddComponent<Grabbable>();
+            grabbable.InjectOptionalRigidbody(rb);
+
+            //Add grabinteractable component 
+            GrabInteractable grabInteractable = newObject.AddComponent<GrabInteractable>();
+            grabInteractable.InjectOptionalPointableElement(grabbable);
+            grabInteractable.InjectRigidbody(rb);
+
+            //Add handgrabinteractable component
+            HandGrabInteractable handGrabInteractable = newObject.AddComponent<HandGrabInteractable>();
+            handGrabInteractable.InjectOptionalPointableElement(grabbable);
+            handGrabInteractable.InjectRigidbody(rb);
         }
     }
 
@@ -69,7 +93,6 @@ public class Receiver : MonoBehaviour
     async void Start()
     {
         Debug.Log("Hello, World!");
-        // TODO: MAKE IT CREATE TransferDirectory IF IT DOESN'T EXIST!!
         string directoryPath = Path.Combine(Application.persistentDataPath, "TransferDirectory");
         
         if (!Directory.Exists(directoryPath))
@@ -81,25 +104,15 @@ public class Receiver : MonoBehaviour
        
         string uniqueFileName = "received_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".obj";
         savePath = Path.Combine(directoryPath, uniqueFileName);
-        Debug.Log("File saved as: " + savePath);
+        
 
         await ReceiveFileAsync(savePath, port);
     }
 
-    float timer = 0.0f;
-    float interval = 8.0f; // This is the interval in seconds. 0.5 seconds means 2 times per second.
 
     // Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime; // Time.deltaTime gives the time between the current and last frame
-
-        if (timer > interval)
-        {
-            Debug.Log("twiddles thumbs");
-            timer = 0.0f;
-        }
-
         if (fileReadyFlag)
         {
             ImportAndCreateMeshes(savePath);
