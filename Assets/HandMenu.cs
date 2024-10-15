@@ -4,18 +4,32 @@ using UnityEngine;
 
 public class HandMenu : MonoBehaviour
 {
-    public GameObject LeftHandAnchor;
+    public Transform LeftHandAnchor;
+    public Transform RightHandAnchor;
     public Vector3 offset = new Vector3(0, 0.1f, 0);
-    // Start is called before the first frame update
+    private Camera mainCamera;
+
     void Start()
     {
-        
+        mainCamera = Camera.main;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Move object to somewhere just above the left hand
-        transform.position = LeftHandAnchor.transform.position + offset;
+        // TODO: test this
+        // Which hand is the user looking at more?
+        Vector3 dirToLeftHand = (LeftHandAnchor.position - mainCamera.transform.position).normalized;
+        float dotL = Vector3.Dot(mainCamera.transform.forward, dirToLeftHand);
+        Vector2 dirToRightHand = (RightHandAnchor.position - mainCamera.transform.position).normalized;
+        float dotR = Vector3.Dot(mainCamera.transform.forward), dirToRightHand);
+        if (dotL > dotR)
+        {
+            // Move object to somewhere just above the left hand
+            transform.position = LeftHandAnchor.position + offset;
+        }
+        else
+        {
+            transform.position = RightHandAnchor.position + offset;
+        }
     }
 }
