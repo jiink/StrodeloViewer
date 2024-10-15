@@ -21,7 +21,7 @@ public class HandMenu : MonoBehaviour
         Vector3 dirToLeftHand = (LeftHandAnchor.position - mainCamera.transform.position).normalized;
         float dotL = Vector3.Dot(mainCamera.transform.forward, dirToLeftHand);
         Vector2 dirToRightHand = (RightHandAnchor.position - mainCamera.transform.position).normalized;
-        float dotR = Vector3.Dot(mainCamera.transform.forward), dirToRightHand);
+        float dotR = Vector3.Dot(mainCamera.transform.forward, dirToRightHand);
         if (dotL > dotR)
         {
             // Move object to somewhere just above the left hand
