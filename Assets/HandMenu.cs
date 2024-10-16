@@ -18,12 +18,11 @@ public class HandMenu : MonoBehaviour
 
     void Update()
     {
-        // TODO: test this
         // Which hand is the user looking at more?
         Vector3 dirToLeftHand = (LeftHandAnchor.position - mainCamera.transform.position).normalized;
         float dotL = Vector3.Dot(mainCamera.transform.forward, dirToLeftHand);
-        Vector2 dirToRightHand = (RightHandAnchor.position - mainCamera.transform.position).normalized;
-        float dotR = System.Math.Abs(Vector3.Dot(mainCamera.transform.forward, dirToRightHand) - 0.5f); // dont even ask
+        Vector3 dirToRightHand = (RightHandAnchor.position - mainCamera.transform.position).normalized;
+        float dotR = Vector3.Dot(mainCamera.transform.forward, dirToRightHand);
         if (dotL > dotR)
         {
             // Move object to somewhere just above the left hand
