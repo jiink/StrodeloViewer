@@ -44,25 +44,35 @@ public class Receiver : MonoBehaviour
             // Assign a material to the mesh renderer
             meshRenderer.material = new UnityEngine.Material(Shader.Find("Standard"));
 
-            //Add rigidbody to object
+            // Add a collider so rigidbody works
+            // (Maybe needs to just be a bounding box if there's performance issues)
+            MeshCollider meshCollider = newObject.AddComponent<MeshCollider>();
+            meshCollider.sharedMesh = unityMesh;
+            meshCollider.convex = true; // Non-convex mesh colliders with non-kinematic rigidbodies is not supported
+
+            // Add rigidbody to object
             Rigidbody rb = newObject.AddComponent<Rigidbody>();
             rb.useGravity = false;
             rb.angularDrag = 100f; // Don't want it flying away
             rb.drag = 100f;
 
-            //Add grabbable component and inject rigidbody
+            // Add grabbable component and inject rigidbody
             Grabbable grabbable = newObject.AddComponent<Grabbable>();
             grabbable.InjectOptionalRigidbody(rb);
 
-            //Add grabinteractable component 
+            // Add grabinteractable component 
             GrabInteractable grabInteractable = newObject.AddComponent<GrabInteractable>();
             grabInteractable.InjectOptionalPointableElement(grabbable);
             grabInteractable.InjectRigidbody(rb);
 
-            //Add handgrabinteractable component
+            // Add handgrabinteractable component
             HandGrabInteractable handGrabInteractable = newObject.AddComponent<HandGrabInteractable>();
             handGrabInteractable.InjectOptionalPointableElement(grabbable);
             handGrabInteractable.InjectRigidbody(rb);
+
+            // Place object in front of user
+            const float spawnDistanceM = 1.0f;
+            newObject.transform.position = UnityEngine.Camera.main.transform.position + (UnityEngine.Camera.main.transform.forward * spawnDistanceM);
         }
     }
 
