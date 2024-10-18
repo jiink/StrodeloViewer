@@ -71,7 +71,7 @@ public class Receiver : MonoBehaviour
             handGrabInteractable.InjectRigidbody(rb);
 
             // Place object in front of user
-            const float spawnDistanceM = 1.0f;
+            const float spawnDistanceM = 0.3f;
             newObject.transform.position = UnityEngine.Camera.main.transform.position + (UnityEngine.Camera.main.transform.forward * spawnDistanceM);
         }
     }
