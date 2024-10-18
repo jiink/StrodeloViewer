@@ -18,6 +18,7 @@ public class Receiver : MonoBehaviour
     string savePath;// = Application.persistentDataPath + "/TransferDirectory/received.obj"; Can only do this in Start()
     int port = 8111;
     private GameObject modelTemplatePrefab;
+    private GameObject cubeVisualizerPrefab;
 
     bool fileReadyFlag = false;
     bool busy = false;
@@ -71,17 +72,12 @@ public class Receiver : MonoBehaviour
             const float spawnDistanceM = 0.3f;
             newObject.transform.position = UnityEngine.Camera.main.transform.position + (UnityEngine.Camera.main.transform.forward * spawnDistanceM);
 
-            GameObject colliderVisualizer = new GameObject("ColliderVisualizer");
+            GameObject colliderVisualizer = Instantiate<GameObject>(cubeVisualizerPrefab);
             colliderVisualizer.tag = "SelectionVisualizer";
             colliderVisualizer.transform.SetParent(newObject.transform);
             colliderVisualizer.transform.localPosition = boxCollider.center;
-            UnityEngine.Mesh cubeMesh = CreateCubeMesh(boxCollider.size);
-            MeshFilter colliderMeshFilter = colliderVisualizer.AddComponent<MeshFilter>();
-            colliderMeshFilter.mesh = cubeMesh;
-            MeshRenderer colliderMeshRenderer = colliderVisualizer.AddComponent<MeshRenderer>();
-            colliderMeshRenderer.material = new UnityEngine.Material(Shader.Find("Standard"));
-            //colliderMeshRenderer.material.color = new Color(0.0f, 0.0f, 1.0f, 0.5f);
-            // that visualzer is disabled by default
+            // Match bounds by scaling
+            colliderVisualizer.transform.localScale = boxCollider.size;
             colliderVisualizer.SetActive(false);
         }
     }
@@ -122,39 +118,6 @@ public class Receiver : MonoBehaviour
         return mesh;
     }
 
-    // It's made of lines.
-    private UnityEngine.Mesh CreateCubeFrameMeshL(Vector3 size)
-    {
-        UnityEngine.Mesh mesh = new UnityEngine.Mesh();
-
-        // Define vertices
-        Vector3[] vertices = {
-            new Vector3(-size.x, -size.y, -size.z) * 0.5f,
-            new Vector3(size.x, -size.y, -size.z) * 0.5f,
-            new Vector3(size.x, size.y, -size.z) * 0.5f,
-            new Vector3(-size.x, size.y, -size.z) * 0.5f,
-            new Vector3(-size.x, -size.y, size.z) * 0.5f,
-            new Vector3(size.x, -size.y, size.z) * 0.5f,
-            new Vector3(size.x, size.y, size.z) * 0.5f,
-            new Vector3(-size.x, size.y, size.z) * 0.5f
-        };
-
-        // Define edges (lines) for the frame
-        int[] lines = {
-            0, 1, 1, 2, 2, 3, 3, 0, // Bottom face
-            4, 5, 5, 6, 6, 7, 7, 4, // Top face
-            0, 4, 1, 5, 2, 6, 3, 7  // Vertical edges
-        };
-
-        // Assign vertices and lines to the mesh
-        mesh.vertices = vertices;
-        mesh.SetIndices(lines, MeshTopology.Lines, 0);
-
-        // Recalculate normals for proper lighting
-        mesh.RecalculateNormals();
-
-        return mesh;
-    }
 
     public async Task ReceiveFileAsync(string savePath, int port)
     {
@@ -184,6 +147,7 @@ public class Receiver : MonoBehaviour
     {
         Debug.Log("Hello, World!");
         modelTemplatePrefab = Resources.Load<GameObject>("LoadedModelTemplate");
+        cubeVisualizerPrefab = Resources.Load<GameObject>("LineCube");
 
         string directoryPath = Path.Combine(Application.persistentDataPath, "TransferDirectory");
         
