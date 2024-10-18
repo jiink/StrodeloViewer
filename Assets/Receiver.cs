@@ -17,6 +17,7 @@ public class Receiver : MonoBehaviour
     public StrodeloCore core;
     string savePath;// = Application.persistentDataPath + "/TransferDirectory/received.obj"; Can only do this in Start()
     int port = 8111;
+    private GameObject modelTemplatePrefab;
 
     bool fileReadyFlag = false;
     bool busy = false;
@@ -31,9 +32,10 @@ public class Receiver : MonoBehaviour
         {
             counter += 1;
             Debug.Log($"Making mesh {counter} of {model.Meshes.Count}");
-            GameObject newObject = new GameObject(mesh.Name);
-            MeshFilter meshFilter = newObject.AddComponent<MeshFilter>();
-            MeshRenderer meshRenderer = newObject.AddComponent<MeshRenderer>();
+            // Load a template and make the necessary changes (e.g. the mesh)
+            GameObject newObject = Instantiate(modelTemplatePrefab);
+            newObject.name = mesh.Name;
+            MeshFilter meshFilter = newObject.GetComponent<MeshFilter>();
 
             // Create and populate the unity mesh
             UnityEngine.Mesh unityMesh = new UnityEngine.Mesh();
@@ -46,50 +48,14 @@ public class Receiver : MonoBehaviour
             meshFilter.mesh = unityMesh;
 
             // Assign a material to the mesh renderer
-            meshRenderer.material = new UnityEngine.Material(Shader.Find("Standard"));
+            //meshRenderer.material = new UnityEngine.Material(Shader.Find("Standard"));
 
-            // Add a collider so rigidbody works
-            // (Maybe needs to just be a bounding box if there's performance issues)
+            // Need to create a collider. Not included in template because it depends on the shape of the model being loaded
             MeshCollider meshCollider = newObject.AddComponent<MeshCollider>();
             meshCollider.sharedMesh = unityMesh;
-            meshCollider.convex = true; // Non-convex mesh colliders with non-kinematic rigidbodies is not supported
-
-            // Add rigidbody to object
-            Rigidbody rb = newObject.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-            rb.angularDrag = 100f; // Don't want it flying away
-            rb.drag = 100f;
-
-            // Add grabbable component and inject rigidbody
-            Grabbable grabbable = newObject.AddComponent<Grabbable>();
-            grabbable.InjectOptionalRigidbody(rb);
-
-            // Add grabinteractable component 
-            GrabInteractable grabInteractable = newObject.AddComponent<GrabInteractable>();
-            grabInteractable.InjectOptionalPointableElement(grabbable);
-            grabInteractable.InjectRigidbody(rb);
-
-            // Add handgrabinteractable component
-            HandGrabInteractable handGrabInteractable = newObject.AddComponent<HandGrabInteractable>();
-            handGrabInteractable.InjectOptionalPointableElement(grabbable);
-            handGrabInteractable.InjectRigidbody(rb);
-
-            // Add component to handle selection
-            SelectableModel selectableModel = newObject.AddComponent<SelectableModel>();
-            selectableModel.Selected += core.OnModelSelected;
-
-            // Add ColliderSurface component for ray interaction
-            ColliderSurface colliderSurface = newObject.AddComponent<ColliderSurface>();
+            meshCollider.convex = true;
+            ColliderSurface colliderSurface = newObject.GetComponent<ColliderSurface>(); // need to fill in the collider field
             colliderSurface.InjectCollider(meshCollider);
-
-            // Add RayInteractable so it can be selected from distance
-            RayInteractable rayInteractable = newObject.AddComponent<RayInteractable>();
-            rayInteractable.InjectSurface(colliderSurface);
-
-            // Add PointableUnityEventWrapper so we can listen to events (e.g. hover, select, etc.)
-            PointableUnityEventWrapper pointableUnityEventWrapper = newObject.AddComponent<PointableUnityEventWrapper>();
-            pointableUnityEventWrapper.InjectPointable(rayInteractable);
-            //pointableUnityEventWrapper.WhenSelect.AddListener((PointerEvent e) => selectableModel.Select()); // THE PROBLEM
 
             // Place object in front of user
             const float spawnDistanceM = 0.3f;
@@ -124,6 +90,8 @@ public class Receiver : MonoBehaviour
     async void Start()
     {
         Debug.Log("Hello, World!");
+        modelTemplatePrefab = Resources.Load<GameObject>("LoadedModelTemplate");
+
         string directoryPath = Path.Combine(Application.persistentDataPath, "TransferDirectory");
         
         if (!Directory.Exists(directoryPath))
