@@ -22,4 +22,32 @@ public class SelectableModel : MonoBehaviour
         Debug.Log(">>>> I AM SELECTED!");
         Selected?.Invoke(gameObject, EventArgs.Empty);
     }
+
+    public void ShowVisual()
+    {
+        if (GetVisualizerChild() != null)
+        {
+            GetVisualizerChild().SetActive(true);
+        }
+    }
+
+    public void HideVisual()
+    {
+        if (GetVisualizerChild() != null)
+        {
+            GetVisualizerChild().SetActive(false);
+        }
+    }
+
+    private GameObject GetVisualizerChild()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.CompareTag("SelectionVisualizer"))
+            {
+                return child.gameObject;
+            }
+        }
+        return null;
+    }
 }
