@@ -57,6 +57,10 @@ public class Receiver : MonoBehaviour
             ColliderSurface colliderSurface = newObject.GetComponent<ColliderSurface>(); // need to fill in the collider field
             colliderSurface.InjectCollider(meshCollider);
 
+            // Have the "core" listen to the selection events
+            SelectableModel selectableModel = newObject.GetComponent<SelectableModel>();
+            selectableModel.Selected += core.OnModelSelected;
+
             // Place object in front of user
             const float spawnDistanceM = 0.3f;
             newObject.transform.position = UnityEngine.Camera.main.transform.position + (UnityEngine.Camera.main.transform.forward * spawnDistanceM);
