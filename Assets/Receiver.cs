@@ -10,23 +10,27 @@ using Assimp;
 using System.Linq;
 using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
+using Oculus.Interaction.Surfaces;
 
 public class Receiver : MonoBehaviour
 {
+    public StrodeloCore core;
     string savePath;// = Application.persistentDataPath + "/TransferDirectory/received.obj"; Can only do this in Start()
     int port = 8111;
 
     bool fileReadyFlag = false;
+    bool busy = false;
 
     public void ImportAndCreateMeshes(string filePath)
     {
         AssimpContext importer = new AssimpContext();
         Scene model = importer.ImportFile(filePath, PostProcessPreset.TargetRealTimeMaximumQuality);
 
-        
-
+        int counter = 0;
         foreach (var mesh in model.Meshes)
         {
+            counter += 1;
+            Debug.Log($"Making mesh {counter} of {model.Meshes.Count}");
             GameObject newObject = new GameObject(mesh.Name);
             MeshFilter meshFilter = newObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = newObject.AddComponent<MeshRenderer>();
@@ -69,6 +73,23 @@ public class Receiver : MonoBehaviour
             HandGrabInteractable handGrabInteractable = newObject.AddComponent<HandGrabInteractable>();
             handGrabInteractable.InjectOptionalPointableElement(grabbable);
             handGrabInteractable.InjectRigidbody(rb);
+
+            // Add component to handle selection
+            SelectableModel selectableModel = newObject.AddComponent<SelectableModel>();
+            selectableModel.Selected += core.OnModelSelected;
+
+            // Add ColliderSurface component for ray interaction
+            ColliderSurface colliderSurface = newObject.AddComponent<ColliderSurface>();
+            colliderSurface.InjectCollider(meshCollider);
+
+            // Add RayInteractable so it can be selected from distance
+            RayInteractable rayInteractable = newObject.AddComponent<RayInteractable>();
+            rayInteractable.InjectSurface(colliderSurface);
+
+            // Add PointableUnityEventWrapper so we can listen to events (e.g. hover, select, etc.)
+            PointableUnityEventWrapper pointableUnityEventWrapper = newObject.AddComponent<PointableUnityEventWrapper>();
+            pointableUnityEventWrapper.InjectPointable(rayInteractable);
+            //pointableUnityEventWrapper.WhenSelect.AddListener((PointerEvent e) => selectableModel.Select()); // THE PROBLEM
 
             // Place object in front of user
             const float spawnDistanceM = 0.3f;
@@ -123,9 +144,11 @@ public class Receiver : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (fileReadyFlag)
+        if (fileReadyFlag && !busy)
         {
+            busy = true;
             ImportAndCreateMeshes(savePath);
+            busy = false;
             fileReadyFlag = false;
         }
     }

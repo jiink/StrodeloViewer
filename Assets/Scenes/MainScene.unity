@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 218883324}
   m_Layer: 0
   m_Name: Box
-  m_TagString: Untagged
+  m_TagString: SelectableObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -410,8 +410,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 218883324}
-        m_TargetAssemblyTypeName: TriggerTest, Assembly-CSharp
-        m_MethodName: Shout
+        m_TargetAssemblyTypeName: SelectableModel, Assembly-CSharp
+        m_MethodName: Select
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
