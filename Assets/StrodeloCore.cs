@@ -32,8 +32,28 @@ public class StrodeloCore : MonoBehaviour
             Debug.LogError("Model is null");
             return;
         }
+        // before we change what the selectedModel is, set its visualizer line color back to normal.
+        if (selectedModel != null)
+        {
+            var oldVis = selectedModel.GetComponent<SelectableModel>().GetVisualizerChild();
+            var oldVisColorChanger = oldVis.GetComponent<ChildrenLineColorChanger>();
+            oldVisColorChanger.LineColor = Color.white;
+        }
 
         selectedModel = model;
         Debug.Log($"Selected model: {selectedModel.name}");
+
+        // Enable its collider visualizer if it has one
+        var vis = selectedModel.GetComponent<SelectableModel>().GetVisualizerChild();
+        if (vis != null)
+        {
+            vis.SetActive(true);
+            // Change its color
+            var visColorChanger = vis.GetComponent<ChildrenLineColorChanger>();
+            if (visColorChanger != null)
+            {
+                visColorChanger.LineColor = Color.green;
+            }
+        }
     }
 }

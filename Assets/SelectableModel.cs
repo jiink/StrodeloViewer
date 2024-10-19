@@ -19,7 +19,7 @@ public class SelectableModel : MonoBehaviour
 
     public void Select()
     {
-        Debug.Log(">>>> I AM SELECTED!");
+        Debug.Log($">>>> CLICKED ON {gameObject.name}!");
         Selected?.Invoke(gameObject, EventArgs.Empty);
     }
 
@@ -39,7 +39,7 @@ public class SelectableModel : MonoBehaviour
         }
     }
 
-    private GameObject GetVisualizerChild()
+    public GameObject GetVisualizerChild()
     {
         foreach (Transform child in transform)
         {
