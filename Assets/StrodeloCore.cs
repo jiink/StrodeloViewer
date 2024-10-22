@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,14 @@ public class StrodeloCore : MonoBehaviour
 {
     public GameObject receiverPrefab;
     private GameObject selectedModel;
+
+    enum PlaceOnSurfaceState
+    {
+        Idle,
+        SelectingModel,
+        SelectingSurface
+    }
+    private PlaceOnSurfaceState placeOnSurfaceState = PlaceOnSurfaceState.Idle;
 
     void Start()
     {
@@ -54,6 +63,22 @@ public class StrodeloCore : MonoBehaviour
             {
                 visColorChanger.LineColor = Color.green;
             }
+        }
+    }
+
+    internal void PlaceOnSurfaceAct()
+    {
+        switch (placeOnSurfaceState)
+        {
+            case PlaceOnSurfaceState.Idle:
+                placeOnSurfaceState = PlaceOnSurfaceState.SelectingModel;
+                break;
+            case PlaceOnSurfaceState.SelectingModel:
+                placeOnSurfaceState = PlaceOnSurfaceState.SelectingSurface;
+                break;
+            case PlaceOnSurfaceState.SelectingSurface:
+                placeOnSurfaceState = PlaceOnSurfaceState.Idle;
+                break;
         }
     }
 }

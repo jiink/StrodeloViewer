@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HandMenu : MonoBehaviour
 {
@@ -9,11 +10,16 @@ public class HandMenu : MonoBehaviour
     public Transform RightHandAnchor;
     public Vector3 offset = new Vector3(0, 0.1f, 0);
     public TextMeshPro debugOutput;
+    public StrodeloCore core;
     private Camera mainCamera;
+    public Button placeOnSurfaceButton;
 
     void Start()
     {
         mainCamera = Camera.main;
+
+        // Hook up the buttons to the core
+        placeOnSurfaceButton.onClick.AddListener(core.PlaceOnSurfaceAct);
     }
 
     void Update()
