@@ -13,13 +13,17 @@ public class HandMenu : MonoBehaviour
     public StrodeloCore core;
     private Camera mainCamera;
     public Button placeOnSurfaceButton;
+    public Button debugButton;
+    private GameObject _visual;
 
     void Start()
     {
+        _visual = transform.GetChild(0).gameObject;
         mainCamera = Camera.main;
 
         // Hook up the buttons to the core
         placeOnSurfaceButton.onClick.AddListener(core.PlaceOnSurfaceAct);
+        debugButton.onClick.AddListener(core.DebugButtonPressed);
     }
 
     void Update()
@@ -37,6 +41,16 @@ public class HandMenu : MonoBehaviour
         else
         {
             transform.position = RightHandAnchor.position + offset;
+        }
+        var maxDot = Mathf.Max(dotL, dotR);
+        if (maxDot < 0.75f)
+        {
+            // Hide the menu if the user is looking away from both hands
+            _visual.SetActive(false);
+        }
+        else
+        {
+            _visual.SetActive(true);
         }
 
         if (debugOutput != null)
