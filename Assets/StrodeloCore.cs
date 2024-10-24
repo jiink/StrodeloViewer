@@ -13,7 +13,7 @@ public class StrodeloCore : MonoBehaviour
     public TextMeshProUGUI instructionBoard;
     private GameObject selectedModel;
     private OVRCameraRig _cameraRig;
-    public FloatingMenu menuPrefab;
+    public GameObject materialInspectorMenuPrefab;
 
     private int debugNum = 0;
 
@@ -138,10 +138,7 @@ public class StrodeloCore : MonoBehaviour
         {
             actionState = ActionState.Idle;
             ClearInstruction();
-            var spawnedMenu = SpawnMenu() // Open the material inspector menu
-            //var materialInspector = spawnedMenu.GetComponent<MaterialInspector>();
-            // Set the model to inspect
-            //materialInspector.SetModel(selectedModel);
+            SpawnMaterialInspector(selectedModel);
         }
         // You happen to be pointing at the model when selecting a surface, so handle the click here.
         else if (actionState == ActionState.SelectingSurface)
@@ -194,15 +191,23 @@ public class StrodeloCore : MonoBehaviour
         debugNum++;
     }
 
+    internal GameObject SpawnMaterialInspector(GameObject inspectedObj)
+    {
+        var m = SpawnMenu(materialInspectorMenuPrefab);
+        var materialInspector = m.GetComponent<MaterialInspectorMenu>();
+        materialInspector.InspectedModel = inspectedObj;
+        return m;
+    }
+
     // Returns the spawned menu
-    internal GameObject SpawnMenu()
+    internal GameObject SpawnMenu(GameObject menuPrefab)
     {
         float spawnDistance = 0.5f;
         Transform userTransform = _cameraRig.centerEyeAnchor;
         Vector3 spawnPos = userTransform.position + userTransform.forward * spawnDistance;
         // face the menu towards the user
         Quaternion rotation = Quaternion.LookRotation(userTransform.position - spawnPos);
-        FloatingMenu menu = Instantiate(menuPrefab, spawnPos, rotation);
-        return menu.gameObject;
+        GameObject menu = Instantiate(menuPrefab, spawnPos, rotation);
+        return menu;
     }
 }
