@@ -849,6 +849,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   receiverPrefab: {fileID: 6613145348980536527, guid: aabde35a0cb4c2f46ae2210337af8be1, type: 3}
   instructionBoard: {fileID: 449397434411860436}
+  menuPrefab: {fileID: 1773429812866492901, guid: 79c22ac1b7341a841908891cdad96685, type: 3}
 --- !u!4 &1705143079
 Transform:
   m_ObjectHideFlags: 0

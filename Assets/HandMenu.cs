@@ -11,9 +11,10 @@ public class HandMenu : MonoBehaviour
     public Vector3 offset = new Vector3(0, 0.1f, 0);
     public TextMeshPro debugOutput;
     public StrodeloCore core;
-    private Camera mainCamera;
     public Button placeOnSurfaceButton;
     public Button debugButton;
+    public Button inspectMaterialButton;
+    private Camera mainCamera;
     private GameObject _visual;
 
     void Start()
@@ -24,6 +25,7 @@ public class HandMenu : MonoBehaviour
         // Hook up the buttons to the core
         placeOnSurfaceButton.onClick.AddListener(core.PlaceOnSurfaceAct);
         debugButton.onClick.AddListener(core.DebugButtonPressed);
+        inspectMaterialButton.onClick.AddListener(core.InspectMaterialAct);
     }
 
     void Update()

@@ -13,16 +13,18 @@ public class StrodeloCore : MonoBehaviour
     public TextMeshProUGUI instructionBoard;
     private GameObject selectedModel;
     private OVRCameraRig _cameraRig;
+    public FloatingMenu menuPrefab;
 
     private int debugNum = 0;
 
-    enum PlaceOnSurfaceState
+    enum ActionState
     {
         Idle,
-        SelectingModel,
-        SelectingSurface
+        SelectingModelForSurface,
+        SelectingSurface,
+        SelectingModelForInspection
     }
-    private PlaceOnSurfaceState placeOnSurfaceState = PlaceOnSurfaceState.Idle;
+    private ActionState actionState = ActionState.Idle;
 
     void Start()
     {
@@ -39,7 +41,7 @@ public class StrodeloCore : MonoBehaviour
 
     void Update()
     {
-        if (placeOnSurfaceState == PlaceOnSurfaceState.SelectingSurface)
+        if (actionState == ActionState.SelectingSurface)
         {
             // TODO: either make the room clickable to set placeonsurface state back to idle, or make model line up a lot better with the UI ray :|
             var ray = GetControllerRay(); 
@@ -90,19 +92,6 @@ public class StrodeloCore : MonoBehaviour
         {
             rayOrigin = _cameraRig.rightHandAnchor.position;
             rayDirection = _cameraRig.rightHandAnchor.right * -1; // .forward goes the wrong way :v
-            //var rightHand = _cameraRig.rightHandAnchor.GetComponentInChildren<OVRHand>();
-            //// can be null if running in Editor with Meta Linq app and the headset is put off
-            //if (rightHand != null)
-            //{
-            //    rayOrigin = rightHand.PointerPose.position;
-            //    //rayDirection = rightHand.PointerPose.forward; // this is actually coming out of the back of the hand
-            //    rayDirection = rightHand.PointerPose.right;
-            //}
-            //else
-            //{
-            //    rayOrigin = _cameraRig.centerEyeAnchor.position;
-            //    rayDirection = _cameraRig.centerEyeAnchor.forward;
-            //}
         }
 
         return new Ray(rayOrigin, rayDirection);
@@ -140,46 +129,54 @@ public class StrodeloCore : MonoBehaviour
             }
         }
 
-        if (placeOnSurfaceState == PlaceOnSurfaceState.SelectingModel)
+        if (actionState == ActionState.SelectingModelForSurface)
         {
-            placeOnSurfaceState = PlaceOnSurfaceState.SelectingSurface;
+            actionState = ActionState.SelectingSurface;
             SetInstruction("Select a surface to place the model on.");
         }
-        // You happen to be pointing at the model when selecting a surface, so handle the click here.
-        else if (placeOnSurfaceState == PlaceOnSurfaceState.SelectingSurface)
+        else if (actionState == ActionState.SelectingModelForInspection)
         {
-            placeOnSurfaceState = PlaceOnSurfaceState.Idle;
+            actionState = ActionState.Idle;
+            ClearInstruction();
+            var spawnedMenu = SpawnMenu() // Open the material inspector menu
+            //var materialInspector = spawnedMenu.GetComponent<MaterialInspector>();
+            // Set the model to inspect
+            //materialInspector.SetModel(selectedModel);
+        }
+        // You happen to be pointing at the model when selecting a surface, so handle the click here.
+        else if (actionState == ActionState.SelectingSurface)
+        {
+            actionState = ActionState.Idle;
             ClearInstruction();
         }
     }
 
     internal void PlaceOnSurfaceAct()
     {
-        if (placeOnSurfaceState == PlaceOnSurfaceState.Idle)
+        if (actionState == ActionState.Idle)
         {
-            placeOnSurfaceState = PlaceOnSurfaceState.SelectingModel;
+            actionState = ActionState.SelectingModelForSurface;
             SetInstruction("Select a model to place on a surface.");
         }
         else
         {
-            placeOnSurfaceState = PlaceOnSurfaceState.Idle;
+            actionState = ActionState.Idle;
             ClearInstruction();
         }
-        //switch (placeOnSurfaceState)
-        //{
-        //    case PlaceOnSurfaceState.Idle:
-        //        placeOnSurfaceState = PlaceOnSurfaceState.SelectingModel;
-        //        SetInstruction("Select a model to place on a surface.");
-        //        break;
-        //    case PlaceOnSurfaceState.SelectingModel:
-        //        placeOnSurfaceState = PlaceOnSurfaceState.SelectingSurface;
-        //        SetInstruction("Select a surface to place the model on.");
-        //        break;
-        //    case PlaceOnSurfaceState.SelectingSurface:
-        //        placeOnSurfaceState = PlaceOnSurfaceState.Idle;
-        //        ClearInstruction();
-        //        break;
-        //}
+    }
+
+    internal void InspectMaterialAct()
+    {
+        if (actionState == ActionState.Idle)
+        {
+            actionState = ActionState.SelectingModelForInspection;
+            SetInstruction("Select a model to inspect its material.");
+        }
+        else
+        {
+            actionState = ActionState.Idle;
+            ClearInstruction();
+        }
     }
 
     internal void SetInstruction(string instruction)
@@ -195,5 +192,17 @@ public class StrodeloCore : MonoBehaviour
     internal void DebugButtonPressed()
     {
         debugNum++;
+    }
+
+    // Returns the spawned menu
+    internal GameObject SpawnMenu()
+    {
+        float spawnDistance = 0.5f;
+        Transform userTransform = _cameraRig.centerEyeAnchor;
+        Vector3 spawnPos = userTransform.position + userTransform.forward * spawnDistance;
+        // face the menu towards the user
+        Quaternion rotation = Quaternion.LookRotation(userTransform.position - spawnPos);
+        FloatingMenu menu = Instantiate(menuPrefab, spawnPos, rotation);
+        return menu.gameObject;
     }
 }
