@@ -1,5 +1,6 @@
 using Meta.WitAi;
 using Meta.XR.MRUtilityKit;
+using Oculus.Interaction;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ public class StrodeloCore : MonoBehaviour
     private GameObject selectedModel;
     private OVRCameraRig _cameraRig;
     public GameObject materialInspectorMenuPrefab;
+    private LineRenderer laser;
+    public RayInteractor rayInteractor; 
 
     private int debugNum = 0;
 
@@ -37,6 +40,12 @@ public class StrodeloCore : MonoBehaviour
             return;
         }
         receiver.core = this;
+
+        laser = gameObject.AddComponent<LineRenderer>();
+        laser.startWidth = 0.01f;
+        laser.endWidth = 0.01f;
+        laser.material = new Material(Shader.Find("Unlit/Color"));
+        laser.startColor = Color.red;
     }
 
     void Update()
@@ -44,7 +53,7 @@ public class StrodeloCore : MonoBehaviour
         if (actionState == ActionState.SelectingSurface)
         {
             // TODO: either make the room clickable to set placeonsurface state back to idle, or make model line up a lot better with the UI ray :|
-            var ray = GetControllerRay(); 
+            var ray = GetControllerRay();
             MRUKAnchor sceneAnchor = null;
             var positioningMethod = MRUK.PositioningMethod.DEFAULT;
             var bestPose = MRUK.Instance?.GetCurrentRoom()?.GetBestPoseFromRaycast(ray, Mathf.Infinity,
@@ -61,19 +70,29 @@ public class StrodeloCore : MonoBehaviour
                 //var mSize = bounds.size;
                 //var offset = normal * mSize.y / 2;
                 //selectedModel.transform.position += offset;
-
-                SetInstruction("Select a surface to place the model on.");
             }
-            else
-            {
-                Debug.LogError("Ray cast not working!");
-                SetInstruction("ERR!");
-            }
+            //else
+            //{
+            //    Debug.LogError("Ray cast not working!");
+            //    SetInstruction("ERR!");
+            //}
+        }
+        if (actionState == ActionState.SelectingModelForInspection ||
+            actionState == ActionState.SelectingModelForSurface)
+        {
+            // Show laser to indicate it's waiting for a selection
+            laser.SetPosition(0, rayInteractor.Origin);
+            laser.SetPosition(1, rayInteractor.End);
+            laser.enabled = true;
+        }
+        else
+        {
+            laser.enabled = false; // don't need the laser
         }
     }
 
-    // Copied from SceneDebugger.cs (see MR utility kit samples)
-    private Ray GetControllerRay()
+        // Copied from SceneDebugger.cs (see MR utility kit samples)
+        private Ray GetControllerRay()
     {
         Vector3 rayOrigin;
         Vector3 rayDirection;
