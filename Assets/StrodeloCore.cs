@@ -1,6 +1,7 @@
 using Meta.WitAi;
 using Meta.XR.MRUtilityKit;
 using Oculus.Interaction;
+using Oculus.Platform;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,12 +12,14 @@ using UnityEngine;
 public class StrodeloCore : MonoBehaviour
 {
     public GameObject receiverPrefab;
-    public TextMeshProUGUI instructionBoard;
+    public HandMenu handMenu;
+    private TextMeshProUGUI instructionBoard;
     private GameObject selectedModel;
     private OVRCameraRig _cameraRig;
     public GameObject materialInspectorMenuPrefab;
-    private LineRenderer laser;
-    public RayInteractor rayInteractor; 
+    public LineRenderer laser;
+    public RayInteractor rayInteractor;
+    public GameObject fakeLoadedModelPrefab; // Just for debugging purposes
 
     private int debugNum = 0;
 
@@ -31,6 +34,7 @@ public class StrodeloCore : MonoBehaviour
 
     void Start()
     {
+        instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         GameObject receiverObject = Instantiate(receiverPrefab);
         Receiver receiver = receiverObject.GetComponent<Receiver>();
@@ -41,8 +45,6 @@ public class StrodeloCore : MonoBehaviour
         }
         receiver.core = this;
 
-        // TODO: make laser into a prefab. cause the material is not working here
-        laser = gameObject.AddComponent<LineRenderer>();
         laser.startWidth = 0.01f;
         laser.endWidth = 0.01f;
     }
@@ -202,6 +204,7 @@ public class StrodeloCore : MonoBehaviour
     internal void DebugButtonPressed()
     {
         debugNum++;
+        SpawnFakeLoadedModel();
     }
 
     internal GameObject SpawnMaterialInspector(GameObject inspectedObj)
@@ -222,5 +225,22 @@ public class StrodeloCore : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(userTransform.position - spawnPos);
         GameObject menu = Instantiate(menuPrefab, spawnPos, rotation);
         return menu;
+    }
+
+    // Just for debugging purposes
+    private void SpawnFakeLoadedModel()
+    {
+        var m = Instantiate(fakeLoadedModelPrefab);
+        var cubeVisualizerPrefab = Resources.Load<GameObject>("LineCube");
+        m.transform.position = _cameraRig.centerEyeAnchor.position + _cameraRig.centerEyeAnchor.forward * 0.3f;
+        GameObject colliderVisualizer = Instantiate<GameObject>(cubeVisualizerPrefab);
+        colliderVisualizer.tag = "SelectionVisualizer";
+        colliderVisualizer.transform.SetParent(m.transform);
+        var boxCollider = m.GetComponent<BoxCollider>();
+        colliderVisualizer.transform.localPosition = boxCollider.center;
+        colliderVisualizer.transform.localScale = boxCollider.size;
+        colliderVisualizer.SetActive(false);
+        SelectableModel selectableModel = m.GetComponent<SelectableModel>();
+        selectableModel.Selected += OnModelSelected;
     }
 }

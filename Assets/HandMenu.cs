@@ -15,9 +15,10 @@ public class HandMenu : MonoBehaviour
     public float distFromFace = 0.1f;
     public TextMeshPro debugOutput;
     public StrodeloCore core;
-    public Button placeOnSurfaceButton;
-    public Button debugButton;
-    public Button inspectMaterialButton;
+    public ClickFromToggle placeOnSurfaceButton;
+    public ClickFromToggle debugButton;
+    public ClickFromToggle inspectMaterialButton;
+    public TextMeshProUGUI instructionBoard;
     private Camera mainCamera;
     private GameObject _visual;
 
