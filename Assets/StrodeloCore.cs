@@ -41,19 +41,17 @@ public class StrodeloCore : MonoBehaviour
         }
         receiver.core = this;
 
+        // TODO: make laser into a prefab. cause the material is not working here
         laser = gameObject.AddComponent<LineRenderer>();
         laser.startWidth = 0.01f;
         laser.endWidth = 0.01f;
-        laser.material = new Material(Shader.Find("Unlit/Color"));
-        laser.startColor = Color.red;
     }
 
     void Update()
     {
         if (actionState == ActionState.SelectingSurface)
         {
-            // TODO: either make the room clickable to set placeonsurface state back to idle, or make model line up a lot better with the UI ray :|
-            var ray = GetControllerRay();
+            var ray = rayInteractor.Ray;
             MRUKAnchor sceneAnchor = null;
             var positioningMethod = MRUK.PositioningMethod.DEFAULT;
             var bestPose = MRUK.Instance?.GetCurrentRoom()?.GetBestPoseFromRaycast(ray, Mathf.Infinity,
@@ -62,20 +60,12 @@ public class StrodeloCore : MonoBehaviour
             {
                 selectedModel.transform.position = bestPose.Value.position;
                 selectedModel.transform.rotation = bestPose.Value.rotation;
-                // TODO: Adjust the position so the model doesn't clip into the surface (using bounding box). or get the physics to do it somehow.
-                //var bounds = selectedModel.GetComponent<MeshFilter>().mesh.bounds;
-                //var hit = new RaycastHit();
-                //MRUK.Instance?.GetCurrentRoom()?.Raycast(ray, Mathf.Infinity, out hit, out _);
-                //var normal = hit.normal;
-                //var mSize = bounds.size;
-                //var offset = normal * mSize.y / 2;
-                //selectedModel.transform.position += offset;
             }
-            //else
-            //{
-            //    Debug.LogError("Ray cast not working!");
-            //    SetInstruction("ERR!");
-            //}
+            laser.SetPosition(0, rayInteractor.Origin);
+            laser.SetPosition(1, rayInteractor.End);
+            laser.startColor = Color.cyan;
+            laser.endColor = Color.cyan;
+            laser.enabled = true;
         }
         if (actionState == ActionState.SelectingModelForInspection ||
             actionState == ActionState.SelectingModelForSurface)
@@ -83,6 +73,8 @@ public class StrodeloCore : MonoBehaviour
             // Show laser to indicate it's waiting for a selection
             laser.SetPosition(0, rayInteractor.Origin);
             laser.SetPosition(1, rayInteractor.End);
+            laser.startColor = Color.red;
+            laser.endColor = Color.red;
             laser.enabled = true;
         }
         else
@@ -91,30 +83,32 @@ public class StrodeloCore : MonoBehaviour
         }
     }
 
-        // Copied from SceneDebugger.cs (see MR utility kit samples)
-        private Ray GetControllerRay()
-    {
-        Vector3 rayOrigin;
-        Vector3 rayDirection;
-        if (OVRInput.activeControllerType == OVRInput.Controller.Touch
-            || OVRInput.activeControllerType == OVRInput.Controller.RTouch)
-        {
-            rayOrigin = _cameraRig.rightHandOnControllerAnchor.position;
-            rayDirection = _cameraRig.rightHandOnControllerAnchor.forward;
-        }
-        else if (OVRInput.activeControllerType == OVRInput.Controller.LTouch)
-        {
-            rayOrigin = _cameraRig.leftHandOnControllerAnchor.position;
-            rayDirection = _cameraRig.leftHandOnControllerAnchor.forward;
-        }
-        else // hands
-        {
-            rayOrigin = _cameraRig.rightHandAnchor.position;
-            rayDirection = _cameraRig.rightHandAnchor.right * -1; // .forward goes the wrong way :v
-        }
+    // TODO: right now we only reference the right hand rayinteractor. re-employ the use of this function but 
+    // make it get the right rayinteractor to use.
+    // Copied from SceneDebugger.cs (see MR utility kit samples)
+    //    private Ray GetControllerRay()
+    //{
+    //    Vector3 rayOrigin;
+    //    Vector3 rayDirection;
+    //    if (OVRInput.activeControllerType == OVRInput.Controller.Touch
+    //        || OVRInput.activeControllerType == OVRInput.Controller.RTouch)
+    //    {
+    //        rayOrigin = _cameraRig.rightHandOnControllerAnchor.position;
+    //        rayDirection = _cameraRig.rightHandOnControllerAnchor.forward;
+    //    }
+    //    else if (OVRInput.activeControllerType == OVRInput.Controller.LTouch)
+    //    {
+    //        rayOrigin = _cameraRig.leftHandOnControllerAnchor.position;
+    //        rayDirection = _cameraRig.leftHandOnControllerAnchor.forward;
+    //    }
+    //    else // hands
+    //    {
+    //        rayOrigin = _cameraRig.rightHandAnchor.position;
+    //        rayDirection = _cameraRig.rightHandAnchor.right * -1; // .forward goes the wrong way :v
+    //    }
 
-        return new Ray(rayOrigin, rayDirection);
-    }
+    //    return new Ray(rayOrigin, rayDirection);
+    //}
 
     public void OnModelSelected(object sender, System.EventArgs e)
     {

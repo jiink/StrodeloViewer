@@ -179,6 +179,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
+--- !u!114 &106167442 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 939354696915477035, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 2007084591}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a379f34d4f4f2e408d34f14bfb753ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &370244059
 GameObject:
   m_ObjectHideFlags: 0
@@ -818,6 +829,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cee191920b8eb41b0960b1082a393a3e, type: 3}
+--- !u!114 &1638271091 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3485521459009502354, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 2007084591}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a379f34d4f4f2e408d34f14bfb753ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1705143077
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,6 +1094,18 @@ PrefabInstance:
       propertyPath: core
       value: 
       objectReference: {fileID: 1705143078}
+    - target: {fileID: 1132502978930628148, guid: e4103c4cefa38f6478fc222840f64a8f, type: 3}
+      propertyPath: leftHand
+      value: 
+      objectReference: {fileID: 1638271091}
+    - target: {fileID: 1132502978930628148, guid: e4103c4cefa38f6478fc222840f64a8f, type: 3}
+      propertyPath: rightHand
+      value: 
+      objectReference: {fileID: 106167442}
+    - target: {fileID: 1132502978930628148, guid: e4103c4cefa38f6478fc222840f64a8f, type: 3}
+      propertyPath: distFromPalm
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 1132502978930628148, guid: e4103c4cefa38f6478fc222840f64a8f, type: 3}
       propertyPath: LeftHandAnchor
       value: 
