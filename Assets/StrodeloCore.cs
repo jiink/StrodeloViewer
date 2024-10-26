@@ -71,8 +71,8 @@ public class StrodeloCore : MonoBehaviour
             }
             laser.SetPosition(0, rayInteractor.Origin);
             laser.SetPosition(1, rayInteractor.End);
-            laser.startColor = Color.cyan;
-            laser.endColor = Color.cyan;
+            laser.startColor = Color.green;
+            laser.endColor = Color.green;
             laser.enabled = true;
         }
         if (actionState == ActionState.SelectingModelForInspection ||
@@ -85,21 +85,26 @@ public class StrodeloCore : MonoBehaviour
             laser.endColor = Color.red;
             laser.enabled = true;
         }
-        else
-        {
-            laser.enabled = false; // don't need the laser
-        }
         if (actionState == ActionState.SelectingLightPosition)
         {
             // make light follow hand
-            pointLight.transform.position = _cameraRig.rightHandAnchor.position;
+            pointLight.transform.position = rayInteractor.Origin;
         }
         else if (actionState == ActionState.SelectingLightPower)
         {
             // Power is proportional to the distance from the pointLight to the hand.
-            float dist = Vector3.Distance(pointLight.transform.position, _cameraRig.rightHandAnchor.position);
+            float dist = Vector3.Distance(pointLight.transform.position, rayInteractor.Origin);
             float multiplier = 10f;
             pointLight.GetComponent<Light>().intensity = dist * multiplier;
+            laser.SetPosition(0, rayInteractor.Origin);
+            laser.SetPosition(1, pointLight.transform.position);
+            laser.startColor = Color.yellow;
+            laser.endColor = Color.yellow;
+            laser.enabled = true;
+        }
+        if (actionState == ActionState.Idle)
+        {
+            laser.enabled = false; // don't need the laser
         }
     }
 
