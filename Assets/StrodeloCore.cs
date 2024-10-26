@@ -21,6 +21,8 @@ public class StrodeloCore : MonoBehaviour
     public RayInteractor rayInteractor;
     public GameObject fakeLoadedModelPrefab; // Just for debugging purposes
 
+    private GameObject pointLight;
+
     private int debugNum = 0;
 
     enum ActionState
@@ -28,7 +30,9 @@ public class StrodeloCore : MonoBehaviour
         Idle,
         SelectingModelForSurface,
         SelectingSurface,
-        SelectingModelForInspection
+        SelectingModelForInspection,
+        SelectingLightPosition,
+        SelectingLightPower
     }
     private ActionState actionState = ActionState.Idle;
 
@@ -82,6 +86,18 @@ public class StrodeloCore : MonoBehaviour
         else
         {
             laser.enabled = false; // don't need the laser
+        }
+        if (actionState == ActionState.SelectingLightPosition)
+        {
+            // make light follow hand
+            pointLight.transform.position = _cameraRig.rightHandAnchor.position;
+        }
+        else if (actionState == ActionState.SelectingLightPower)
+        {
+            // Power is proportional to the distance from the pointLight to the hand.
+            float dist = Vector3.Distance(pointLight.transform.position, _cameraRig.rightHandAnchor.position);
+            float multiplier = 10f;
+            pointLight.GetComponent<Light>().intensity = dist * multiplier;
         }
     }
 
@@ -242,5 +258,47 @@ public class StrodeloCore : MonoBehaviour
         colliderVisualizer.SetActive(false);
         SelectableModel selectableModel = m.GetComponent<SelectableModel>();
         selectableModel.Selected += OnModelSelected;
+    }
+
+    internal void AddPointLightAct()
+    {
+        if (actionState == ActionState.Idle)
+        {
+            actionState = ActionState.SelectingLightPosition;
+            SetInstruction("Select a position to place a point light.");
+            // Create light now and have it follow the hand until a certain hand pose is made
+            pointLight = new GameObject("Point Light");
+            pointLight.AddComponent<Light>();
+            pointLight.GetComponent<Light>().type = LightType.Point;
+            pointLight.GetComponent<Light>().range = 10f;
+            pointLight.GetComponent<Light>().intensity = 1f;
+            pointLight.GetComponent<Light>().color = Color.white;
+        }
+        else
+        {
+            actionState = ActionState.Idle;
+            ClearInstruction();
+        }
+    }
+
+    // Hand forms a certain pose
+    public void HandPoseStrike()
+    {
+        // make the hand pose to place the light.
+        // Light was already following hand in Update(), so this just makes it stop following the hand.
+        if (actionState == ActionState.SelectingLightPosition)
+        {
+            // next, move posed hand away to define its power
+            actionState = ActionState.SelectingLightPower;
+        }
+    }
+
+    // Hand stops forming a certain pose
+    public void HandPoseUnstrike()
+    {
+        if (actionState == ActionState.SelectingLightPower)
+        {
+            actionState = ActionState.Idle;
+        }
     }
 }

@@ -18,6 +18,7 @@ public class HandMenu : MonoBehaviour
     public ClickFromToggle placeOnSurfaceButton;
     public ClickFromToggle debugButton;
     public ClickFromToggle inspectMaterialButton;
+    public ClickFromToggle addPointLightButton;
     public TextMeshProUGUI instructionBoard;
     private Camera mainCamera;
     private GameObject _visual;
@@ -31,6 +32,7 @@ public class HandMenu : MonoBehaviour
         placeOnSurfaceButton.onClick.AddListener(core.PlaceOnSurfaceAct);
         debugButton.onClick.AddListener(core.DebugButtonPressed);
         inspectMaterialButton.onClick.AddListener(core.InspectMaterialAct);
+        addPointLightButton.onClick.AddListener(core.AddPointLightAct);
     }
 
     void Update()
