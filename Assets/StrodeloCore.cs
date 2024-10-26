@@ -21,6 +21,7 @@ public class StrodeloCore : MonoBehaviour
     public RayInteractor rayInteractor;
     public GameObject fakeLoadedModelPrefab; // Just for debugging purposes
 
+    private GameObject pointLightPrefab;
     private GameObject pointLight;
 
     private int debugNum = 0;
@@ -38,6 +39,7 @@ public class StrodeloCore : MonoBehaviour
 
     void Start()
     {
+        pointLightPrefab = Resources.Load<GameObject>("StrodeloPointLight");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         GameObject receiverObject = Instantiate(receiverPrefab);
@@ -267,12 +269,7 @@ public class StrodeloCore : MonoBehaviour
             actionState = ActionState.SelectingLightPosition;
             SetInstruction("Select a position to place a point light.");
             // Create light now and have it follow the hand until a certain hand pose is made
-            pointLight = new GameObject("Point Light");
-            pointLight.AddComponent<Light>();
-            pointLight.GetComponent<Light>().type = LightType.Point;
-            pointLight.GetComponent<Light>().range = 10f;
-            pointLight.GetComponent<Light>().intensity = 1f;
-            pointLight.GetComponent<Light>().color = Color.white;
+            pointLight = Instantiate(pointLightPrefab);
         }
         else
         {
