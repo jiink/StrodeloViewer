@@ -23,6 +23,9 @@ public class HandMenu : MonoBehaviour
     private Camera mainCamera;
     private GameObject _visual;
 
+    public bool isLeftHandAvailableForMenu = true;
+    public bool isRightHandAvailableForMenu = true;
+
     void Start()
     {
         _visual = transform.GetChild(0).gameObject;
@@ -50,6 +53,14 @@ public class HandMenu : MonoBehaviour
         float scoreL = dotL + palmDotL;
         float scoreR = dotR + palmDotR;
         Vector3 targetPos;
+        if (!isLeftHandAvailableForMenu)
+        {
+            scoreL = 0f;
+        }
+        if (!isRightHandAvailableForMenu)
+        {
+            scoreR = 0f;
+        }
         if (scoreL > scoreR)
         {
             // Move object to in front of the left palm, offset away from it
@@ -80,5 +91,39 @@ public class HandMenu : MonoBehaviour
         {
             debugOutput.text = $"dotL: {dotL}\ndotR: {dotR}";
         }
+    }
+
+    // When a hand is available for menu, that means a handmenu is allowed to be over it.
+    // we only want a hand to show the menu if it's open-palm and facing user.
+    public void SetHandAvailableForMenu(bool leftHand, bool available)
+    {
+        if (leftHand == true)
+        {
+            isLeftHandAvailableForMenu = available;
+        }
+        else
+        {
+            isRightHandAvailableForMenu = available;
+        }
+    }
+
+    // The following functions are so the SelectorUnityEventWrappers can call them.
+    public void SetLeftHandAvailableForMenuFalse()
+    {
+        isLeftHandAvailableForMenu = false;
+        Debug.Log("LF");
+    }
+    public void SetLeftHandAvailableForMenuTrue()
+    {
+        isLeftHandAvailableForMenu = true;
+        Debug.Log("LT");
+    }
+    public void SetRightHandAvailableForMenuFalse()
+    {
+        isRightHandAvailableForMenu = false;
+    }
+    public void SetRightHandAvailableForMenuTrue()
+    {
+        isRightHandAvailableForMenu = true;
     }
 }

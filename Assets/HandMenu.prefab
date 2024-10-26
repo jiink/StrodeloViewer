@@ -576,6 +576,8 @@ MonoBehaviour:
   inspectMaterialButton: {fileID: 5998112600704760827}
   addPointLightButton: {fileID: 8822149937898657955}
   instructionBoard: {fileID: 4466967585965756827}
+  isLeftHandAvailableForMenu: 1
+  isRightHandAvailableForMenu: 1
 --- !u!114 &4079033891800902063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -666,6 +668,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3563149335964526229, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7479147155149179214, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8871935754367020192, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
