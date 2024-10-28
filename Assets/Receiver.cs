@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -19,6 +20,7 @@ public class Receiver : MonoBehaviour
     int port = 8111;
     private GameObject modelTemplatePrefab;
     private GameObject cubeVisualizerPrefab;
+    public Text notificationText;
 
     bool fileReadyFlag = false;
     bool busy = false;
@@ -134,6 +136,8 @@ public class Receiver : MonoBehaviour
                 await stream.CopyToAsync(output);
                 Debug.Log("I got something! Time to import it");
                 fileReadyFlag = true;
+
+                notificationText.text = "File received!";
             }
             stream.Close();
             client.Close();
@@ -173,6 +177,7 @@ public class Receiver : MonoBehaviour
         {
             busy = true;
             ImportAndCreateMeshes(savePath);
+            notificationText.text = "";
             busy = false;
             fileReadyFlag = false;
         }
