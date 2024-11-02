@@ -48,6 +48,11 @@ public class MaterialListing : MonoBehaviour
         Material.SetFloat("_Metallic", value);
     }
 
+    public void SetSmoothness(float value)
+    {
+        Material.SetFloat("_Glossiness", value);
+    }
+
     void Start()
     {
         

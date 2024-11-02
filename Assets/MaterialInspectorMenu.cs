@@ -55,8 +55,6 @@ public class MaterialInspectorMenu : MonoBehaviour
         {
             Material[] materialsArray = renderer.materials;
             List<Material> materials = new List<Material>(materialsArray);
-            const float startVPos = 120;
-            const float spacing = 30;
             // Process the materials list as needed
             for (int i = 0; i < materialsArray.Length; i++)
             {
