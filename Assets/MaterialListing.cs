@@ -43,11 +43,9 @@ public class MaterialListing : MonoBehaviour
         nameLabel.text = $"Material #{MaterialNumber}: {Material.name}";
     }
 
-    // sets the vertical position, so everything can form a list
-    public void SetUIPos(float verticalPos)
+    public void SetMetallic(float value)
     {
-        RectTransform rectTransform = GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, verticalPos);
+        Material.SetFloat("_Metallic", value);
     }
 
     void Start()

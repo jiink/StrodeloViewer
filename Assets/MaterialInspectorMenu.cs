@@ -63,7 +63,6 @@ public class MaterialInspectorMenu : MonoBehaviour
                 MaterialListing materialListing = Instantiate(materialListingPrefab, materialListingsParent).GetComponent<MaterialListing>();
                 materialListing.MaterialNumber = i;
                 materialListing.Material = materialsArray[i];
-                materialListing.SetUIPos(startVPos - i * spacing);
             }
         }
     }
