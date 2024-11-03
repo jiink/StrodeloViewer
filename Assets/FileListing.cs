@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -16,6 +17,8 @@ public class FileListing : MonoBehaviour
             text.text = value;
         }
     }
+    public event EventHandler Selected;
+
     void Start()
     {
         
@@ -24,5 +27,10 @@ public class FileListing : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void Select()
+    {
+        Selected?.Invoke(this, EventArgs.Empty);
     }
 }
