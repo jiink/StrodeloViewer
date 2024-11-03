@@ -25,6 +25,11 @@ public class FileBrowser : MonoBehaviour
                 return;
             }
             // Update the file listing
+            // Clear out the old listings
+            foreach (Transform child in fileListingsParent)
+            {
+                Destroy(child.gameObject);
+            }
             DirectoryInfo directory = new DirectoryInfo(value);
             //FileInfo[] files = directory.GetFiles();
             //foreach (FileInfo file in files)
