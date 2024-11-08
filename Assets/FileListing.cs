@@ -9,6 +9,8 @@ public class FileListing : MonoBehaviour
 {
     public Image buttonBackground;
     public TextMeshProUGUI text;
+    public Material highlightMaterial;
+    private Material normalMaterial;
     private string _fileName;
     public string FileName
     {
@@ -28,23 +30,19 @@ public class FileListing : MonoBehaviour
             _isHighlighted = value;
             if (_isHighlighted)
             {
-                buttonBackground.color = _highlightColor;
+                buttonBackground.material = highlightMaterial;
             }
             else
             {
-                buttonBackground.color = _normalColor;
+                buttonBackground.material = normalMaterial;
             }
         }
     }
     public event EventHandler Selected;
 
-    private Color _highlightColor;
-    private Color _normalColor;
-
     void Start()
     {
-        _highlightColor = Color.cyan;
-        _normalColor = buttonBackground.color;
+        normalMaterial = buttonBackground.material;
     }
 
     void Update()

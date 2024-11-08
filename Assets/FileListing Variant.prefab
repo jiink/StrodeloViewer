@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 188438165202829920, guid: 292035910f8781541aeb438db140bd72, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 188438165202829920, guid: 292035910f8781541aeb438db140bd72, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -51,6 +55,14 @@ PrefabInstance:
     - target: {fileID: 1427739234993208687, guid: 292035910f8781541aeb438db140bd72, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1669467483778148062, guid: 292035910f8781541aeb438db140bd72, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1669467483778148062, guid: 292035910f8781541aeb438db140bd72, type: 3}
+      propertyPath: m_Sprite
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1821597551794952225, guid: 292035910f8781541aeb438db140bd72, type: 3}
       propertyPath: m_AnchorMax.y
@@ -266,6 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonBackground: {fileID: 5751660256164535606}
   text: {fileID: 2821586094951640546}
+  highlightMaterial: {fileID: 2100000, guid: 0fc6cb6eec4350346a2edbdc45071e6f, type: 2}
 --- !u!114 &5751660256164535606 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1669467483778148062, guid: 292035910f8781541aeb438db140bd72, type: 3}
