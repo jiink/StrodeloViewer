@@ -12,6 +12,7 @@ using UnityEngine;
 public class StrodeloCore : MonoBehaviour
 {
     public GameObject receiverPrefab;
+    public GameObject modelLoaderPrefab;
     public HandMenu handMenu;
     private TextMeshProUGUI instructionBoard;
     private GameObject selectedModel;
@@ -20,11 +21,6 @@ public class StrodeloCore : MonoBehaviour
     public LineRenderer laser;
     public RayInteractor rayInteractor;
     public GameObject fakeLoadedModelPrefab; // Just for debugging purposes
-
-    [HideInInspector]
-    public GameObject receiverObject;
-    [HideInInspector]
-    public Receiver receiver;
 
     private GameObject pointLightPrefab;
     private GameObject pointLight;
@@ -60,14 +56,22 @@ public class StrodeloCore : MonoBehaviour
         pointLightPrefab = Resources.Load<GameObject>("StrodeloPointLight");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
-        receiverObject = Instantiate(receiverPrefab);
-        receiver = receiverObject.GetComponent<Receiver>();
+        var receiverObject = Instantiate(receiverPrefab);
+        var receiver = receiverObject.GetComponent<Receiver>();
         if (receiver == null)
         {
             Debug.LogError("Receiver component not found on the instantiated prefab.");
             return;
         }
-        receiver.core = this;
+        var modelLoaderObject = Instantiate(modelLoaderPrefab);
+        var modelLoader = modelLoaderObject.GetComponent<ModelLoader>();
+        if (modelLoader == null)
+        {
+            Debug.LogError("ModelLoader component not found on the instantiated prefab.");
+            return;
+        }
+        // receiver fires an event and modelLoader listens to it
+        receiver.FileReceived += modelLoader.OnFileReceived;
 
         laser.startWidth = 0.01f;
         laser.endWidth = 0.01f;

@@ -1202,13 +1202,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   receiverPrefab: {fileID: 6613145348980536527, guid: aabde35a0cb4c2f46ae2210337af8be1, type: 3}
+  modelLoaderPrefab: {fileID: 8396566610287897262, guid: 8cb7785273e802642b8ba21d0f1ccf30, type: 3}
   handMenu: {fileID: 666899270}
   materialInspectorMenuPrefab: {fileID: 6206853835423080413, guid: 9fc358b17e35bb0449c8b40974592f13, type: 3}
   laser: {fileID: 1848604165}
   rayInteractor: {fileID: 2045158528}
   fakeLoadedModelPrefab: {fileID: 5691554241309182549, guid: 25ea72fed99ba354986755e1cb42f7f2, type: 3}
-  receiverObject: {fileID: 0}
-  receiver: {fileID: 0}
 --- !u!4 &1705143079
 Transform:
   m_ObjectHideFlags: 0
