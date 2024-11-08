@@ -23,8 +23,8 @@ public class HandMenu : MonoBehaviour
     private Camera mainCamera;
     private GameObject _visual;
 
-    public bool isLeftHandAvailableForMenu = true;
-    public bool isRightHandAvailableForMenu = true;
+    public bool isLeftHandAvailableForMenu = false;
+    public bool isRightHandAvailableForMenu = false;
 
     void Start()
     {
