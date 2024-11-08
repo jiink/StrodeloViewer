@@ -264,4 +264,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ffdb9079d0b7734a8a5db32d24e4315, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonBackground: {fileID: 5751660256164535606}
   text: {fileID: 2821586094951640546}
+--- !u!114 &5751660256164535606 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1669467483778148062, guid: 292035910f8781541aeb438db140bd72, type: 3}
+  m_PrefabInstance: {fileID: 6411194385198889960}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
