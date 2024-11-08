@@ -27,8 +27,18 @@ public class Receiver : MonoBehaviour
 
     public void ImportAndCreateMeshes(string filePath)
     {
+        Debug.Log($"Importing file: {filePath}");
         AssimpContext importer = new AssimpContext();
-        Scene model = importer.ImportFile(filePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+        Scene model;
+        try
+        {
+            model = importer.ImportFile(filePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Failed to import file: " + e.Message);
+            return;
+        }
 
         int counter = 0;
         foreach (var mesh in model.Meshes)
@@ -137,12 +147,25 @@ public class Receiver : MonoBehaviour
                 Debug.Log("I got something! Time to import it");
                 fileReadyFlag = true;
 
-                notificationText.text = "File received!";
+                NotifyUser("File received!");
             }
             stream.Close();
             client.Close();
             Debug.Log("Time to wait again!");
         }
+    }
+
+    private void NotifyUser(string v)
+    {
+        if (notificationText != null)
+        {
+            notificationText.text = v;
+        }
+        else
+        {
+            Debug.LogError("No notification text object found");
+        }
+        Debug.Log(v);
     }
 
 
@@ -177,7 +200,6 @@ public class Receiver : MonoBehaviour
         {
             busy = true;
             ImportAndCreateMeshes(savePath);
-            notificationText.text = "";
             busy = false;
             fileReadyFlag = false;
         }
