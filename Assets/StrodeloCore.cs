@@ -21,8 +21,26 @@ public class StrodeloCore : MonoBehaviour
     public RayInteractor rayInteractor;
     public GameObject fakeLoadedModelPrefab; // Just for debugging purposes
 
+    [HideInInspector]
+    public GameObject receiverObject;
+    [HideInInspector]
+    public Receiver receiver;
+
     private GameObject pointLightPrefab;
     private GameObject pointLight;
+    
+    private static StrodeloCore _instance;
+    public static StrodeloCore Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<StrodeloCore>();
+            }
+            return _instance;
+        }
+    }
 
     private int debugNum = 0;
 
@@ -42,8 +60,8 @@ public class StrodeloCore : MonoBehaviour
         pointLightPrefab = Resources.Load<GameObject>("StrodeloPointLight");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
-        GameObject receiverObject = Instantiate(receiverPrefab);
-        Receiver receiver = receiverObject.GetComponent<Receiver>();
+        receiverObject = Instantiate(receiverPrefab);
+        receiver = receiverObject.GetComponent<Receiver>();
         if (receiver == null)
         {
             Debug.LogError("Receiver component not found on the instantiated prefab.");
@@ -53,6 +71,7 @@ public class StrodeloCore : MonoBehaviour
 
         laser.startWidth = 0.01f;
         laser.endWidth = 0.01f;
+        _instance = this;
     }
 
     void Update()
