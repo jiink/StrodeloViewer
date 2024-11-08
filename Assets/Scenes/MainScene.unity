@@ -1207,6 +1207,8 @@ MonoBehaviour:
   laser: {fileID: 1848604165}
   rayInteractor: {fileID: 2045158528}
   fakeLoadedModelPrefab: {fileID: 5691554241309182549, guid: 25ea72fed99ba354986755e1cb42f7f2, type: 3}
+  receiverObject: {fileID: 0}
+  receiver: {fileID: 0}
 --- !u!4 &1705143079
 Transform:
   m_ObjectHideFlags: 0
