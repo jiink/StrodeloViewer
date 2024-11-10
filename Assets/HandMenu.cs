@@ -1,4 +1,5 @@
 using Oculus.Interaction.Input;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,11 +15,8 @@ public class HandMenu : MonoBehaviour
     public float distFromPalm = 0.15f;
     public float distFromFace = 0.1f;
     public TextMeshPro debugOutput;
-    public StrodeloCore core;
-    public ClickFromToggle placeOnSurfaceButton;
-    public ClickFromToggle debugButton;
-    public ClickFromToggle inspectMaterialButton;
-    public ClickFromToggle addPointLightButton;
+    public GameObject handMenuButtonPrefab; // This is a template that has its picture and label and action changed accordingly.
+    public Transform buttonsParent;
     public TextMeshProUGUI instructionBoard;
     private Camera mainCamera;
     private GameObject _visual;
@@ -26,16 +24,39 @@ public class HandMenu : MonoBehaviour
     public bool isLeftHandAvailableForMenu = false;
     public bool isRightHandAvailableForMenu = false;
 
+    private HButtonEntry[] hButtonEntries;
+
     void Start()
     {
         _visual = transform.GetChild(0).gameObject;
         mainCamera = Camera.main;
 
+        // Define data for all buttons
+        hButtonEntries = new HButtonEntry[]
+        {
+            new("Place on Surface", null, StrodeloCore.Instance.PlaceOnSurfaceAct),
+            new("Debug", null, StrodeloCore.Instance.DebugButtonPressed),
+            new("Inspect Material", null, StrodeloCore.Instance.InspectMaterialAct),
+            new("Add Point Light", null, StrodeloCore.Instance.AddPointLightAct)
+        };
+
+        InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);
         // Hook up the buttons to the core
-        placeOnSurfaceButton.onClick.AddListener(core.PlaceOnSurfaceAct);
-        debugButton.onClick.AddListener(core.DebugButtonPressed);
-        inspectMaterialButton.onClick.AddListener(core.InspectMaterialAct);
-        addPointLightButton.onClick.AddListener(core.AddPointLightAct);
+        //placeOnSurfaceButton.onClick.AddListener(StrodeloCore.Instance.PlaceOnSurfaceAct);
+        //debugButton.onClick.AddListener(StrodeloCore.Instance.DebugButtonPressed);
+        //inspectMaterialButton.onClick.AddListener(StrodeloCore.Instance.InspectMaterialAct);
+        //addPointLightButton.onClick.AddListener(StrodeloCore.Instance.AddPointLightAct);
+    }
+
+    // Spawns the buttons and hooks up the events
+    private void InitializeButtons(HButtonEntry[] hButtonEntries, GameObject btemplate, Transform parent)
+    {
+        for (int i = 0; i < hButtonEntries.Length; i++)
+        {
+            GameObject newButton = Instantiate(btemplate, parent);
+            HandMenuButton hmb = newButton.GetComponent<HandMenuButton>();
+            hmb.SetData(hButtonEntries[i]);
+        }
     }
 
     void Update()
@@ -125,5 +146,19 @@ public class HandMenu : MonoBehaviour
     public void SetRightHandAvailableForMenuTrue()
     {
         isRightHandAvailableForMenu = true;
+    }
+}
+
+struct HButtonEntry
+{
+    public string Name;
+    public Sprite Icon;
+    public Action OnClick;
+
+    public HButtonEntry(string name, Sprite icon, Action onClick)
+    {
+        Name = name;
+        Icon = icon;
+        OnClick = onClick;
     }
 }
