@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FaceUser : MonoBehaviour
 {
+    public bool backwards = false;
+
     // Reference to the main camera
     private Camera mainCamera;
 
@@ -25,6 +27,10 @@ public class FaceUser : MonoBehaviour
             if (direction.sqrMagnitude > 0.01f)
             {
                 transform.rotation = Quaternion.LookRotation(direction);
+                if (backwards)
+                {
+                    transform.Rotate(0, 180, 0);
+                }
             }
         }
     }
