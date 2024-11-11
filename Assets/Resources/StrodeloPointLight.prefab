@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7994457295670334361}
   - component: {fileID: 5862184379892235684}
   - component: {fileID: 4932510529902624995}
+  - component: {fileID: 8072141910342977088}
   m_Layer: 0
   m_Name: StrodeloPointLight
   m_TagString: Untagged
@@ -203,7 +204,19 @@ MonoBehaviour:
         m_CallState: 2
   _whenSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8072141910342977088}
+        m_TargetAssemblyTypeName: StrodeloLight, Assembly-CSharp
+        m_MethodName: Select
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenUnselect:
     m_PersistentCalls:
       m_Calls: []
@@ -213,6 +226,18 @@ MonoBehaviour:
   _whenCancel:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8072141910342977088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286042438789870929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0becc6598e6d7274399a1badbfe46e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2910663418727034602
 GameObject:
   m_ObjectHideFlags: 0

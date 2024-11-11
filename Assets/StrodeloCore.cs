@@ -24,7 +24,8 @@ public class StrodeloCore : MonoBehaviour
 
     private GameObject pointLightPrefab;
     private GameObject pointLight;
-    
+    private GameObject parentOfLights; // spawn all lights under this object
+
     private static StrodeloCore _instance;
     public static StrodeloCore Instance
     {
@@ -47,12 +48,14 @@ public class StrodeloCore : MonoBehaviour
         SelectingSurface,
         SelectingModelForInspection,
         SelectingLightPosition,
-        SelectingLightPower
+        SelectingLightPower,
+        SelectingLightForDeletion
     }
     private ActionState actionState = ActionState.Idle;
 
     void Start()
     {
+        parentOfLights = new GameObject("Lights");
         pointLightPrefab = Resources.Load<GameObject>("StrodeloPointLight");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
@@ -209,6 +212,22 @@ public class StrodeloCore : MonoBehaviour
         }
     }
 
+    public void OnLightSelected(object sender, EventArgs e)
+    {
+        if (actionState == ActionState.SelectingLightForDeletion)
+        {
+            var light = sender as StrodeloLight;
+            if (light == null)
+            {
+                Debug.LogError("Light is null");
+                return;
+            }
+            Destroy(light.gameObject);
+            actionState = ActionState.Idle;
+            ClearInstruction();
+        }
+    }
+
     internal void PlaceOnSurfaceAct()
     {
         if (actionState == ActionState.Idle)
@@ -297,7 +316,9 @@ public class StrodeloCore : MonoBehaviour
             actionState = ActionState.SelectingLightPosition;
             SetInstruction("Select a position to place a point light.");
             // Create light now and have it follow the hand until a certain hand pose is made
-            pointLight = Instantiate(pointLightPrefab);
+            pointLight = Instantiate(pointLightPrefab, parentOfLights.transform);
+            var sl = pointLight.GetComponent<StrodeloLight>();
+            sl.OnSelectAction += OnLightSelected;
         }
         else
         {
@@ -324,6 +345,19 @@ public class StrodeloCore : MonoBehaviour
         if (actionState == ActionState.SelectingLightPower)
         {
             actionState = ActionState.Idle;
+        }
+    }
+
+    internal void DeleteLightAct()
+    {
+        if (actionState == ActionState.SelectingLightForDeletion)
+        {
+            actionState = ActionState.Idle;
+        }
+        else
+        {
+            actionState = ActionState.SelectingLightForDeletion;
+            SetInstruction("Select a light to delete.");
         }
     }
 }
