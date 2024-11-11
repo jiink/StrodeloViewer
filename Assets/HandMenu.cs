@@ -38,7 +38,9 @@ public class HandMenu : MonoBehaviour
             new("Debug", null, StrodeloCore.Instance.DebugButtonPressed),
             new("Inspect Material", null, StrodeloCore.Instance.InspectMaterialAct),
             new("Add Point Light", null, StrodeloCore.Instance.AddPointLightAct),
+            new("Add Directional Light", null, StrodeloCore.Instance.AddDirectionalLightAct),
             new("Delete Light", null, StrodeloCore.Instance.DeleteLightAct),
+
         };
 
         InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);

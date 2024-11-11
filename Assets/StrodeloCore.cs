@@ -24,6 +24,8 @@ public class StrodeloCore : MonoBehaviour
 
     private GameObject pointLightPrefab;
     private GameObject pointLight;
+    private GameObject sunLightPrefab;
+    private GameObject sunLight;
     private GameObject parentOfLights; // spawn all lights under this object
 
     private static StrodeloCore _instance;
@@ -49,7 +51,9 @@ public class StrodeloCore : MonoBehaviour
         SelectingModelForInspection,
         SelectingLightPosition,
         SelectingLightPower,
-        SelectingLightForDeletion
+        SelectingLightForDeletion,
+        SelectingSunPosition,
+        SelectingSunDirAndPow,
     }
     private ActionState actionState = ActionState.Idle;
 
@@ -57,6 +61,7 @@ public class StrodeloCore : MonoBehaviour
     {
         parentOfLights = new GameObject("Lights");
         pointLightPrefab = Resources.Load<GameObject>("StrodeloPointLight");
+        sunLightPrefab = Resources.Load<GameObject>("StrodeloDirectionalLight");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         var receiverObject = Instantiate(receiverPrefab);
@@ -124,6 +129,25 @@ public class StrodeloCore : MonoBehaviour
             pointLight.GetComponent<Light>().intensity = dist * multiplier;
             laser.SetPosition(0, rayInteractor.Origin);
             laser.SetPosition(1, pointLight.transform.position);
+            laser.startColor = Color.yellow;
+            laser.endColor = Color.yellow;
+            laser.enabled = true;
+        }
+        else if (actionState == ActionState.SelectingSunPosition)
+        {
+            // make sun follow hand. doesn't effect the lighting, but good for positioning the icon.
+            sunLight.transform.position = rayInteractor.Origin;
+        }
+        else if (actionState == ActionState.SelectingSunDirAndPow)
+        {
+            // make sun point towards the hand
+            sunLight.transform.LookAt(rayInteractor.Origin);
+            // Power is proportional to the distance from the sunLight to the hand.
+            float dist = Vector3.Distance(sunLight.transform.position, rayInteractor.Origin);
+            float multiplier = 10f;
+            sunLight.GetComponent<Light>().intensity = dist * multiplier;
+            laser.SetPosition(0, rayInteractor.Origin);
+            laser.SetPosition(1, sunLight.transform.position);
             laser.startColor = Color.yellow;
             laser.endColor = Color.yellow;
             laser.enabled = true;
@@ -289,7 +313,7 @@ public class StrodeloCore : MonoBehaviour
         return m;
     }
 
-    // Returns the spawned menu
+    // Spawns a menu, and returns the menu it spawned
     internal GameObject SpawnMenu(GameObject menuPrefab)
     {
         float spawnDistance = 0.5f;
@@ -328,6 +352,7 @@ public class StrodeloCore : MonoBehaviour
             pointLight = Instantiate(pointLightPrefab, parentOfLights.transform);
             var sl = pointLight.GetComponent<StrodeloLight>();
             sl.OnSelectAction += OnLightSelected;
+            sl.DisableCollider();
         }
         else
         {
@@ -346,6 +371,10 @@ public class StrodeloCore : MonoBehaviour
             // next, move posed hand away to define its power
             actionState = ActionState.SelectingLightPower;
         }
+        else if (actionState == ActionState.SelectingSunPosition)
+        {
+            actionState = ActionState.SelectingSunDirAndPow;
+        }
     }
 
     // Hand stops forming a certain pose
@@ -354,6 +383,12 @@ public class StrodeloCore : MonoBehaviour
         if (actionState == ActionState.SelectingLightPower)
         {
             actionState = ActionState.Idle;
+            pointLight.GetComponent<StrodeloLight>().EnableCollider();
+        }
+        else if (actionState == ActionState.SelectingSunDirAndPow)
+        {
+            actionState = ActionState.Idle;
+            sunLight.GetComponent<StrodeloLight>().EnableCollider();
         }
     }
 
@@ -367,6 +402,33 @@ public class StrodeloCore : MonoBehaviour
         {
             actionState = ActionState.SelectingLightForDeletion;
             SetInstruction("Select a light to delete.");
+        }
+    }
+
+    internal void AddDirectionalLightAct()
+    {
+        if (actionState == ActionState.Idle)
+        {
+            actionState = ActionState.SelectingSunPosition;
+            SetInstruction("Select a position to place the directional light.");
+            // Delete any existing sun light (see "Sun" tag)
+            foreach (Transform child in parentOfLights.transform)
+            {
+                if (child.CompareTag("Sun"))
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+            // Create light now and have it follow the hand until a certain hand pose is made
+            sunLight = Instantiate(sunLightPrefab, parentOfLights.transform);
+            var sl = sunLight.GetComponent<StrodeloLight>();
+            sl.OnSelectAction += OnLightSelected;
+            sl.DisableCollider(); // to not interfere with placement and dir/strength control gestures
+        }
+        else
+        {
+            actionState = ActionState.Idle;
+            ClearInstruction();
         }
     }
 }

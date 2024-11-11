@@ -5,6 +5,16 @@ TagManager:
   serializedVersion: 2
   tags:
   - SelectionVisualizer
+  - SelectableObject
+  - QDSUISecondaryButton
+  - QDSUIDestructiveButton
+  - QDSUISharedThemeColor
+  - QDSUIIcon
+  - QDSUIPrimaryButton
+  - QDSUIAccentColor
+  - QDSUIToggleButton
+  - QDSUITextSecondaryColor
+  - Sun
   layers:
   - Default
   - TransparentFX
