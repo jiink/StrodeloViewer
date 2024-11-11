@@ -128,6 +128,15 @@ public class StrodeloCore : MonoBehaviour
             laser.endColor = Color.yellow;
             laser.enabled = true;
         }
+        else if (actionState == ActionState.SelectingLightForDeletion)
+        {
+            // Show laser to indicate it's waiting for a selection
+            laser.SetPosition(0, rayInteractor.Origin);
+            laser.SetPosition(1, rayInteractor.End);
+            laser.startColor = Color.red;
+            laser.endColor = Color.red;
+            laser.enabled = true;
+        }
         if (actionState == ActionState.Idle)
         {
             laser.enabled = false; // don't need the laser
