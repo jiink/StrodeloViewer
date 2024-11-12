@@ -7,6 +7,9 @@ public class SelectableModel : MonoBehaviour
 {
     public event EventHandler Selected;
 
+    private Quaternion lockedRotation; // write down rotation once lock happens
+    private bool isRotationLocked = false;
+
     void Start()
     {
         
@@ -15,6 +18,14 @@ public class SelectableModel : MonoBehaviour
     void Update()
     {
         
+    }
+
+    void FixedUpdate()
+    {
+        if (isRotationLocked)
+        {
+            gameObject.transform.rotation = lockedRotation;
+        }
     }
 
     public void Select()
@@ -49,5 +60,25 @@ public class SelectableModel : MonoBehaviour
             }
         }
         return null;
+    }
+
+    internal void LockRotation(bool rotationLock)
+    {
+        // Freeze rotation on rigidbody component if there is one
+        var rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.freezeRotation = rotationLock;
+        }
+        else
+        {
+            Debug.LogError("SelectableModel: No rigidbody found");
+        }
+        if (rotationLock)
+        {
+            // write down the current rotation so we can keep it there
+            lockedRotation = gameObject.transform.rotation;
+        }
+        isRotationLocked = rotationLock;
     }
 }

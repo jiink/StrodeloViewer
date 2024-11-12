@@ -40,7 +40,7 @@ public class HandMenu : MonoBehaviour
             new("Add Point Light", null, StrodeloCore.Instance.AddPointLightAct),
             new("Add Directional Light", null, StrodeloCore.Instance.AddDirectionalLightAct),
             new("Delete Light", null, StrodeloCore.Instance.DeleteLightAct),
-
+            new("(Un)lock Rotation", null, StrodeloCore.Instance.LockRotationToggleAct)
         };
 
         InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);

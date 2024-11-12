@@ -28,6 +28,8 @@ public class StrodeloCore : MonoBehaviour
     private GameObject sunLight;
     private GameObject parentOfLights; // spawn all lights under this object
 
+    private bool rotationLock = false;
+
     private static StrodeloCore _instance;
     public static StrodeloCore Instance
     {
@@ -429,6 +431,29 @@ public class StrodeloCore : MonoBehaviour
         {
             actionState = ActionState.Idle;
             ClearInstruction();
+        }
+    }
+
+    // Makes it so that models keep their rotation when you grab em and stuff
+    internal void LockRotationToggleAct()
+    {
+        rotationLock = !rotationLock;
+        // Get all "SelectableObject" tagged things, and tell the SelectableObject component to lock/unlock rotation
+        var selectableObjects = GameObject.FindGameObjectsWithTag("SelectableObject");
+        foreach (var obj in selectableObjects)
+        {
+            var selectableModel = obj.GetComponent<SelectableModel>();
+            if (selectableModel != null)
+            {
+                selectableModel.LockRotation(rotationLock);
+            }
+        }
+        if (rotationLock)
+        {
+            SetInstruction("Locked rotation.");
+        } else
+        {
+            SetInstruction("Unlocked Rotation.");
         }
     }
 }
