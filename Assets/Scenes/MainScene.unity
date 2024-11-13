@@ -1083,7 +1083,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _occlusionShadersMode: 2
-  _removeHands: 0
+  _removeHands: 1
   _cameraRig: {fileID: 228919043}
 --- !u!1001 &1631666324
 PrefabInstance:
