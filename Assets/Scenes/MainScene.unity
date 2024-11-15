@@ -1235,6 +1235,11 @@ MonoBehaviour:
   laser: {fileID: 1848604165}
   rayInteractor: {fileID: 2045158528}
   fakeLoadedModelPrefab: {fileID: 5691554241309182549, guid: 25ea72fed99ba354986755e1cb42f7f2, type: 3}
+  leftHandRenderer: {fileID: 1807746767}
+  rightHandRenderer: {fileID: 1807746766}
+  handPassthroughMaterial: {fileID: 2100000, guid: d5e2ab92e53f69e40a760f658d55cb3d, type: 2}
+  handStandardMaterial: {fileID: 2100000, guid: d641a50c4fe4ee3489a64cf52b76ae79, type: 2}
+  environmentDepthManager: {fileID: 0}
 --- !u!4 &1705143079
 Transform:
   m_ObjectHideFlags: 0
@@ -1251,6 +1256,16 @@ Transform:
   - {fileID: 1848604166}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &1807746766 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8907808974102868868, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 2007084591}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &1807746767 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2168138016974986308, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 2007084591}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1810115660
 GameObject:
   m_ObjectHideFlags: 0

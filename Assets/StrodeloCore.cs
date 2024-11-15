@@ -1,4 +1,5 @@
 using Meta.WitAi;
+using Meta.XR.EnvironmentDepth;
 using Meta.XR.MRUtilityKit;
 using Oculus.Interaction;
 using Oculus.Platform;
@@ -21,6 +22,11 @@ public class StrodeloCore : MonoBehaviour
     public LineRenderer laser;
     public RayInteractor rayInteractor;
     public GameObject fakeLoadedModelPrefab; // Just for debugging purposes
+    public SkinnedMeshRenderer leftHandRenderer; // So its material can be changed when toggling occlusion
+    public SkinnedMeshRenderer rightHandRenderer; // Usually on OVRCameraRigInteraction>OVRCameraRig>OVRInteractionComprehensive>OVRHands>RightHandGrabUseSynthetic>OVRRightHandVisual>OculusHand_R>r_handMeshNode
+    public Material handPassthroughMaterial; // For when occlusion is enabled, hand is masked out
+    public Material handStandardMaterial; // For when occlusion is off
+    public EnvironmentDepthManager environmentDepthManager; // Handles occlusion
 
     private GameObject pointLightPrefab;
     private GameObject pointLight;
@@ -29,6 +35,7 @@ public class StrodeloCore : MonoBehaviour
     private GameObject parentOfLights; // spawn all lights under this object
 
     private bool rotationLock = false;
+    private bool occlusionEnabled = true;
 
     private static StrodeloCore _instance;
     public static StrodeloCore Instance
@@ -454,6 +461,28 @@ public class StrodeloCore : MonoBehaviour
         } else
         {
             SetInstruction("Unlocked Rotation.");
+        }
+    }
+
+    internal void ToggleOcclusionAct()
+    {
+        occlusionEnabled = !occlusionEnabled;
+
+        if (occlusionEnabled)
+        {
+            environmentDepthManager.enabled = true;
+            environmentDepthManager.OcclusionShadersMode = OcclusionShadersMode.SoftOcclusion;
+            leftHandRenderer.material = handPassthroughMaterial;
+            rightHandRenderer.material = handPassthroughMaterial;
+            SetInstruction("Occlusion enabled.");
+        }
+        else
+        {
+            environmentDepthManager.enabled = false;
+            environmentDepthManager.OcclusionShadersMode = OcclusionShadersMode.None;
+            leftHandRenderer.material = handStandardMaterial;
+            rightHandRenderer.material = handStandardMaterial;
+            SetInstruction("Occlusion disabled.");
         }
     }
 }
