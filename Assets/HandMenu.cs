@@ -43,6 +43,7 @@ public class HandMenu : MonoBehaviour
             new("(Un)lock Rotation", null, StrodeloCore.Instance.LockRotationToggleAct),
             new("Toggle Occlusion", null, StrodeloCore.Instance.ToggleOcclusionAct),
             new("Reflection Map", null, StrodeloCore.Instance.ReflectionMapAct),
+            new("Exit", null, StrodeloCore.Instance.ExitAct)
         };
 
         InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);

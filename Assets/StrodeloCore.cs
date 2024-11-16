@@ -563,4 +563,9 @@ public class StrodeloCore : MonoBehaviour
             Debug.LogError($"Error loading texture: {ex.Message}");
         }
     }
+
+    internal void ExitAct()
+    {
+        UnityEngine.Application.Quit();
+    }
 }
