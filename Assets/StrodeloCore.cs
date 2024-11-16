@@ -51,6 +51,7 @@ public class StrodeloCore : MonoBehaviour
     }
 
     private int debugNum = 0;
+    private GameObject _fileBrowserPrefab;
 
     enum ActionState
     {
@@ -71,6 +72,7 @@ public class StrodeloCore : MonoBehaviour
         parentOfLights = new GameObject("Lights");
         pointLightPrefab = Resources.Load<GameObject>("StrodeloPointLight");
         sunLightPrefab = Resources.Load<GameObject>("StrodeloDirectionalLight");
+        _fileBrowserPrefab = Resources.Load<GameObject>("FileBrowser Variant");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         var receiverObject = Instantiate(receiverPrefab);
@@ -483,6 +485,63 @@ public class StrodeloCore : MonoBehaviour
             leftHandRenderer.material = handStandardMaterial;
             rightHandRenderer.material = handStandardMaterial;
             SetInstruction("Occlusion disabled.");
+        }
+    }
+
+    // So you can change what the ambient lighting and reflections look like
+    internal void ReflectionMapAct()
+    {
+        GameObject fileBrowserO = SpawnMenu(_fileBrowserPrefab);
+        FileBrowser fileBrowser = fileBrowserO.GetComponent<FileBrowser>();
+        fileBrowser.FileOpen += (sender, e) =>
+        {
+            SetEnvMapFromFilePath(fileBrowser.FullFilePath);
+        };
+    }
+
+    private void SetEnvMapFromFilePath(string fullFilePath)
+    {
+        if (string.IsNullOrEmpty(fullFilePath) || !System.IO.File.Exists(fullFilePath))
+        {
+            Debug.LogError("Invalid file path.");
+            return;
+        }
+        try
+        {
+            // Load the texture
+            byte[] fileData = System.IO.File.ReadAllBytes(fullFilePath);
+            Texture2D _texture = new(2, 2, TextureFormat.RGBAHalf, false);
+
+            if (fullFilePath.EndsWith(".hdr") || fullFilePath.EndsWith(".exr"))
+            {
+                try
+                {
+                    _texture.LoadRawTextureData(fileData);
+                }
+                catch(Exception ex)
+                {
+                    Debug.LogError($"Failed to load HDR/EXR texture from file: {ex.Message}");
+                    return;
+                }
+            }
+            else
+            {
+                if (!_texture.LoadImage(fileData))
+                {
+                    Debug.LogError("Failed to load texture from file.");
+                    return;
+                }
+            }
+
+            _texture.Apply();
+
+            // Change texture of material being used for skybox, which is "Skybox/Panoramic"
+            RenderSettings.skybox.SetTexture("_MainTex", _texture);
+            DynamicGI.UpdateEnvironment();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error loading texture: {ex.Message}");
         }
     }
 }

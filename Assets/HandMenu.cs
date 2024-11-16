@@ -41,7 +41,8 @@ public class HandMenu : MonoBehaviour
             new("Add Directional Light", null, StrodeloCore.Instance.AddDirectionalLightAct),
             new("Delete Light", null, StrodeloCore.Instance.DeleteLightAct),
             new("(Un)lock Rotation", null, StrodeloCore.Instance.LockRotationToggleAct),
-            new("Toggle Occlusion", null, StrodeloCore.Instance.ToggleOcclusionAct)
+            new("Toggle Occlusion", null, StrodeloCore.Instance.ToggleOcclusionAct),
+            new("Reflection Map", null, StrodeloCore.Instance.ReflectionMapAct),
         };
 
         InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);
