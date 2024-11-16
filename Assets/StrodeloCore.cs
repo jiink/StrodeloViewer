@@ -3,6 +3,7 @@ using Meta.XR.EnvironmentDepth;
 using Meta.XR.MRUtilityKit;
 using Oculus.Interaction;
 using Oculus.Platform;
+using Superla.RadianceHDR;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -501,6 +502,8 @@ public class StrodeloCore : MonoBehaviour
 
     private void SetEnvMapFromFilePath(string fullFilePath)
     {
+        // make a new "Skybox/Panoramic" material and set its texture to the loaded texture
+        Material newSkyMat = new Material(Shader.Find("Skybox/Panoramic"));
         if (string.IsNullOrEmpty(fullFilePath) || !System.IO.File.Exists(fullFilePath))
         {
             Debug.LogError("Invalid file path.");
@@ -512,15 +515,17 @@ public class StrodeloCore : MonoBehaviour
             byte[] fileData = System.IO.File.ReadAllBytes(fullFilePath);
             Texture2D _texture = new(2, 2, TextureFormat.RGBAHalf, false);
 
-            if (fullFilePath.EndsWith(".hdr") || fullFilePath.EndsWith(".exr"))
+            if (fullFilePath.EndsWith(".hdr") || fullFilePath.EndsWith(".exr")) // exr not working tho :(
             {
                 try
                 {
-                    _texture.LoadRawTextureData(fileData);
+                    // Use RadianceHDRTexture to load HDR texture
+                    RadianceHDRTexture hdrTexture = new RadianceHDRTexture(fileData);
+                    _texture = hdrTexture.texture;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Debug.LogError($"Failed to load HDR/EXR texture from file: {ex.Message}");
+                    Debug.LogError($"Failed to load HDR texture from file: {ex.Message}");
                     return;
                 }
             }
@@ -535,8 +540,22 @@ public class StrodeloCore : MonoBehaviour
 
             _texture.Apply();
 
+            newSkyMat.SetTexture("_MainTex", _texture);
+
             // Change texture of material being used for skybox, which is "Skybox/Panoramic"
-            RenderSettings.skybox.SetTexture("_MainTex", _texture);
+            //RenderSettings.skybox.SetTexture("_MainTex", _texture);
+            RenderSettings.skybox = newSkyMat;
+            ReflectionProbe reflectionProbe = FindObjectOfType<ReflectionProbe>();
+            if (reflectionProbe != null)
+            {
+                // Exclude all objects from being baked into the reflection probe
+                reflectionProbe.cullingMask = 0;
+                reflectionProbe.RenderProbe();
+            }
+            else
+            {
+                Debug.LogError("Reflection probe not found.");
+            }
             DynamicGI.UpdateEnvironment();
         }
         catch (Exception ex)
