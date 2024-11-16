@@ -17,7 +17,6 @@ public class Receiver : MonoBehaviour
 {
     public string savePath;// = Application.persistentDataPath + "/TransferDirectory/received.obj"; Can only do this in Start()
     int port = 8111;
-    public Text notificationText;
 
     bool fileReadyFlag = false;
 
@@ -39,7 +38,7 @@ public class Receiver : MonoBehaviour
                 Debug.Log("I got something! Time to import it");
                 fileReadyFlag = true;
 
-                NotifyUser("File received!");
+                StrodeloCore.Instance.SpawnNotification("File received!");
             }
             stream.Close();
             client.Close();
@@ -47,20 +46,6 @@ public class Receiver : MonoBehaviour
         }
 
     }
-
-    private void NotifyUser(string v)
-    {
-        if (notificationText != null)
-        {
-            notificationText.text = v;
-        }
-        else
-        {
-            Debug.LogError("No notification text object found");
-        }
-        Debug.Log(v);
-    }
-
 
     // Start is called before the first frame update
     async void Start()

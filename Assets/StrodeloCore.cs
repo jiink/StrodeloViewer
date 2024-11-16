@@ -29,6 +29,7 @@ public class StrodeloCore : MonoBehaviour
     public Material handStandardMaterial; // For when occlusion is off
     public EnvironmentDepthManager environmentDepthManager; // Handles occlusion
 
+    private GameObject notificationPrefab;
     private GameObject pointLightPrefab;
     private GameObject pointLight;
     private GameObject sunLightPrefab;
@@ -74,6 +75,7 @@ public class StrodeloCore : MonoBehaviour
         pointLightPrefab = Resources.Load<GameObject>("StrodeloPointLight");
         sunLightPrefab = Resources.Load<GameObject>("StrodeloDirectionalLight");
         _fileBrowserPrefab = Resources.Load<GameObject>("FileBrowser Variant");
+        notificationPrefab = Resources.Load<GameObject>("StrodeloNotification");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         var receiverObject = Instantiate(receiverPrefab);
@@ -315,6 +317,7 @@ public class StrodeloCore : MonoBehaviour
     {
         debugNum++;
         SpawnFakeLoadedModel();
+        SpawnNotification("Debug button pressed " + debugNum + " times.");
     }
 
     internal GameObject SpawnMaterialInspector(GameObject inspectedObj)
@@ -567,5 +570,11 @@ public class StrodeloCore : MonoBehaviour
     internal void ExitAct()
     {
         UnityEngine.Application.Quit();
+    }
+
+    public void SpawnNotification(string message)
+    {
+        GameObject notification = SpawnMenu(notificationPrefab);
+        notification.GetComponent<StrodeloNotification>().Message = message;
     }
 }
