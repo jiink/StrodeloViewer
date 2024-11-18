@@ -5,6 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TriLibCore;
+using TriLibCore.General;
+using TriLibCore.Interfaces;
 
 public class ModelLoader : MonoBehaviour
 {
@@ -26,6 +29,79 @@ public class ModelLoader : MonoBehaviour
     public void ImportAndCreateMeshes(string filePath)
     {
         Debug.Log($"Importing file: {filePath}");
+
+        //var assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
+        AssetLoader.LoadModelFromFile(filePath, (assetLoaderContext) =>
+        {
+            Debug.Log("Model imported successfully!");
+
+            
+            GameObject loadedModel = assetLoaderContext.RootGameObject;
+
+            if (loadedModel != null)
+            {
+ 
+                ProcessLoadedModel(loadedModel);
+            }
+            else
+            {
+                Debug.LogError("Failed to retrieve the loaded model.");
+            }
+        },
+       (error) =>
+       {
+           Debug.LogError($"Failed to load model: {error}");
+       });
+    }
+
+
+    private void ProcessLoadedModel(GameObject loadedModel)
+    {
+        if (loadedModel == null)
+        {
+            Debug.LogError("Loaded model is null!");
+            return;
+        }
+
+        // Process the loaded model
+        loadedModel.transform.position = UnityEngine.Camera.main.transform.position +
+                                         (UnityEngine.Camera.main.transform.forward * 0.3f);
+
+        // Loop through all child objects (meshes) and apply additional processing
+        foreach (Transform child in loadedModel.transform)
+        {
+            // Example: Add box colliders to each child
+            BoxCollider boxCollider = child.gameObject.AddComponent<BoxCollider>();
+            MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                Bounds bounds = meshRenderer.bounds;
+                boxCollider.center = bounds.center - child.position;
+                boxCollider.size = bounds.size;
+            }
+
+            // Add collider surface and inject the collider
+            ColliderSurface colliderSurface = child.gameObject.AddComponent<ColliderSurface>();
+            colliderSurface.InjectCollider(boxCollider);
+
+            // Add event handling for selection
+            SelectableModel selectableModel = child.gameObject.AddComponent<SelectableModel>();
+            selectableModel.Selected += StrodeloCore.Instance.OnModelSelected;
+
+            // Create visualizer for collider
+            GameObject colliderVisualizer = Instantiate(cubeVisualizerPrefab);
+            colliderVisualizer.tag = "SelectionVisualizer";
+            colliderVisualizer.transform.SetParent(child);
+            colliderVisualizer.transform.localPosition = boxCollider.center;
+            colliderVisualizer.transform.localScale = boxCollider.size;
+            colliderVisualizer.SetActive(false);
+        }
+
+        // Optionally, you can apply a material or shader to the loaded model
+        Debug.Log("Model processing complete.");
+    }
+
+        /*
         AssimpContext importer = new AssimpContext();
         Scene model;
         try
@@ -90,7 +166,8 @@ public class ModelLoader : MonoBehaviour
             colliderVisualizer.transform.localScale = boxCollider.size;
             colliderVisualizer.SetActive(false);
         }
-    }
+        */
+    
 
     void Start()
     {
