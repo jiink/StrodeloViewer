@@ -7,11 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Threading.Tasks;
-using Assimp;
-using System.Linq;
-using Oculus.Interaction;
-using Oculus.Interaction.HandGrab;
-using Oculus.Interaction.Surfaces;
+
 
 public class Receiver : MonoBehaviour
 {
@@ -20,9 +16,10 @@ public class Receiver : MonoBehaviour
 
     bool fileReadyFlag = false;
 
-    public event EventHandler FileReceived;   
+    public event EventHandler FileReceived;
+    private string directoryPath;
 
-    public async Task ReceiveFileAsync(string savePath, int port)
+    public async Task ReceiveFileAsync(int port)
     {
         var listener = new TcpListener(IPAddress.Any, port);
         Debug.Log("Now listening on port " + port);
@@ -32,17 +29,38 @@ public class Receiver : MonoBehaviour
         {
             var client = await listener.AcceptTcpClientAsync();
             var stream = client.GetStream();
-            using (var output = File.Create(savePath))
-            {
-                await stream.CopyToAsync(output);
-                Debug.Log("I got something! Time to import it");
-                fileReadyFlag = true;
 
-                StrodeloCore.Instance.SpawnNotification("File received!");
+            try
+            {
+                byte[] lengthBuffer = new byte[4];
+                await stream.ReadAsync(lengthBuffer, 0, 4);
+                int fileNameLength = BitConverter.ToInt32(lengthBuffer, 0);
+
+                byte[] fileNameBuffer = new byte[fileNameLength];
+                await stream.ReadAsync(fileNameBuffer, 0, fileNameLength);
+                string fileName = System.Text.Encoding.UTF8.GetString(fileNameBuffer);
+
+                savePath = Path.Combine(directoryPath, fileName);
+
+                using (var output = File.Create(savePath))
+                {
+                    await stream.CopyToAsync(output);
+                    Debug.Log("I got something! Time to import it");
+                    fileReadyFlag = true;
+
+                    StrodeloCore.Instance.SpawnNotification("File received: " + fileName);
+                }
             }
-            stream.Close();
-            client.Close();
-            Debug.Log("Time to wait again!");
+            catch (Exception ex)
+            {
+                Debug.Log("Error receiving file: " + ex.Message);
+            }
+            finally
+            {
+                stream.Close();
+                client.Close();
+                Debug.Log("Time to wait again!");
+            }
         }
 
     }
@@ -53,7 +71,7 @@ public class Receiver : MonoBehaviour
         Debug.Log("Hello, World!");
         
 
-        string directoryPath = Path.Combine(Application.persistentDataPath, "TransferDirectory");
+        directoryPath = Path.Combine(Application.persistentDataPath, "TransferDirectory");
         
         if (!Directory.Exists(directoryPath))
         {
@@ -61,12 +79,7 @@ public class Receiver : MonoBehaviour
             Debug.Log("Created directory: " +  directoryPath);
         }
 
-       
-        string uniqueFileName = "received_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".obj";
-        savePath = Path.Combine(directoryPath, uniqueFileName);
-        
-
-        await ReceiveFileAsync(savePath, port);
+        await ReceiveFileAsync(port);
     }
 
 
