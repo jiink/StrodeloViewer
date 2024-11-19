@@ -324,8 +324,44 @@ public class StrodeloCore : MonoBehaviour
     {
         var m = SpawnMenu(materialInspectorMenuPrefab);
         var materialInspector = m.GetComponent<MaterialInspectorMenu>();
-        materialInspector.InspectedModel = inspectedObj;
+
+        // Find the MeshRenderer in the children of the inspected object
+        MeshRenderer meshRenderer = FindMeshRendererInChildren(inspectedObj);
+        if (meshRenderer != null)
+        {
+            materialInspector.InspectedModel = meshRenderer.gameObject;
+        }
+        else
+        {
+            Debug.LogError("No MeshRenderer found in the inspected object or its children.");
+        }
+
         return m;
+    }
+
+    private MeshRenderer FindMeshRendererInChildren(GameObject parent)
+    {
+        if (parent == null) return null;
+
+        // Check if the parent itself has a MeshRenderer component
+        MeshRenderer meshRenderer = parent.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            return meshRenderer;
+        }
+
+        // Recursively check each child
+        foreach (Transform child in parent.transform)
+        {
+            meshRenderer = FindMeshRendererInChildren(child.gameObject);
+            if (meshRenderer != null)
+            {
+                return meshRenderer;
+            }
+        }
+
+        // Return null if no MeshRenderer is found
+        return null;
     }
 
     // Spawns a menu, and returns the menu it spawned
