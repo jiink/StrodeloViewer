@@ -69,72 +69,46 @@ public class ModelLoader : MonoBehaviour
         }
 
         // Process the loaded model
-        loadedModel.transform.position = UnityEngine.Camera.main.transform.position +
-                                         (UnityEngine.Camera.main.transform.forward * 0.3f);
 
-        // Loop through all child objects (meshes) and apply additional processing
+        GameObject template = Instantiate(modelTemplatePrefab);
+        loadedModel.transform.SetParent(template.transform);
+
+        List<Bounds> childBounds = new List<Bounds>();
+        Bounds bounds = new Bounds(loadedModel.transform.position, Vector3.zero);
+        // Calculate bounding box for collider of whole object including all children
         foreach (Transform child in loadedModel.transform)
         {
-            // Example: Add box colliders to each child
-            BoxCollider boxCollider = child.gameObject.AddComponent<BoxCollider>();
             MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
             if (meshRenderer != null)
             {
-                Bounds bounds = meshRenderer.bounds;
-                boxCollider.center = bounds.center - child.position;
-                boxCollider.size = bounds.size;
+                childBounds.Add(meshRenderer.bounds);
+                bounds.Encapsulate(meshRenderer.bounds);
             }
-
-            // Rigidbody
-            Rigidbody rigidbody = child.gameObject.AddComponent<Rigidbody>();
-            rigidbody.isKinematic = false;
-            rigidbody.useGravity = false;
-            rigidbody.drag = 100;
-            rigidbody.angularDrag = 100;
-
-            // Grabbable
-            Grabbable grabbable = child.gameObject.AddComponent<Grabbable>();
-            grabbable.InjectOptionalRigidbody(rigidbody);
-            GrabInteractable grabInteractable = child.gameObject.AddComponent<GrabInteractable>();
-            grabInteractable.InjectRigidbody(rigidbody);
-            HandGrabInteractable handGrabInteractable = child.gameObject.AddComponent<HandGrabInteractable>();
-            handGrabInteractable.InjectOptionalPointableElement(grabbable);
-            handGrabInteractable.InjectRigidbody(rigidbody);
-
-            // Add collider surface and inject the collider
-            ColliderSurface colliderSurface = child.gameObject.AddComponent<ColliderSurface>();
-            colliderSurface.InjectCollider(boxCollider);
-
-            // RayInteractable
-            RayInteractable rayInteractable = child.gameObject.AddComponent<RayInteractable>();
-            rayInteractable.InjectSurface(colliderSurface);
-
-            // Add event handling for selection
-            SelectableModel selectableModel = child.gameObject.AddComponent<SelectableModel>();
-            selectableModel.Selected += StrodeloCore.Instance.OnModelSelected;
-            PointableUnityEventWrapper pointableUnityEventWrapper = child.gameObject.AddComponent<PointableUnityEventWrapper>();
-            pointableUnityEventWrapper.InjectPointable(rayInteractable);
-            //pointableUnityEventWrapper.WhenHover.AddListener((_) => { selectableModel.ShowVisual(); });
-            //pointableUnityEventWrapper.WhenUnhover.AddListener((_) => { selectableModel.HideVisual(); });
-            //pointableUnityEventWrapper.WhenSelect.AddListener((_) => { selectableModel.Select(); });
-            //pointableUnityEventWrapper.WhenHover.AddListener(delegate { Debug.Log("shitted mysefl"); });
-            //pointableUnityEventWrapper.WhenUnhover.AddListener(delegate { Debug.Log("unshitted mysefl"); });
-            //pointableUnityEventWrapper.WhenSelect.AddListener((_) => { Debug.Log("wiped"); });
-            //pointableUnityEventWrapper.WhenUnselect.AddListener((_) => { });
-            //pointableUnityEventWrapper.WhenMove.AddListener((_) => { });
-            //pointableUnityEventWrapper.WhenCancel.AddListener((_) => { });
-
-            // Create visualizer for collider
-            GameObject colliderVisualizer = Instantiate(cubeVisualizerPrefab);
-            colliderVisualizer.tag = "SelectionVisualizer";
-            colliderVisualizer.transform.SetParent(child);
-            colliderVisualizer.transform.localPosition = boxCollider.center;
-            colliderVisualizer.transform.localScale = boxCollider.size;
-            colliderVisualizer.SetActive(false);
         }
 
-        // Optionally, you can apply a material or shader to the loaded model
-        Debug.Log("Model processing complete.");
+        // Need collider for the whole object
+        BoxCollider boxCollider = template.AddComponent<BoxCollider>();
+        boxCollider.center = bounds.center - template.transform.position;
+        boxCollider.size = bounds.size;
+
+        // fill in collider field
+        ColliderSurface colliderSurface = template.GetComponent<ColliderSurface>();
+        colliderSurface.InjectCollider(boxCollider);
+
+        // Have Core listen to wselection events
+        SelectableModel selectableModel = template.GetComponent<SelectableModel>();
+        selectableModel.Selected += StrodeloCore.Instance.OnModelSelected;
+
+        template.transform.position = UnityEngine.Camera.main.transform.position +
+                                         (UnityEngine.Camera.main.transform.forward * 0.3f);
+        //loadedModel.transform.position = template.transform.position;
+
+        GameObject colliderVisualizer = Instantiate(cubeVisualizerPrefab);
+        colliderVisualizer.tag = "SelectionVisualizer";
+        colliderVisualizer.transform.SetParent(template.transform);
+        colliderVisualizer.transform.localPosition = boxCollider.center;
+        colliderVisualizer.transform.localScale = boxCollider.size;
+        colliderVisualizer.SetActive(false);
     }
     void Start()
     {
