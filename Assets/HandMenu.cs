@@ -34,6 +34,7 @@ public class HandMenu : MonoBehaviour
         // Define data for all buttons
         hButtonEntries = new HButtonEntry[]
         {
+            new("Load 3D model", null, StrodeloCore.Instance.Load3DModelAct),
             new("Place on Surface", null, StrodeloCore.Instance.PlaceOnSurfaceAct),
             new("Debug", null, StrodeloCore.Instance.DebugButtonPressed),
             new("Inspect Material", null, StrodeloCore.Instance.InspectMaterialAct),

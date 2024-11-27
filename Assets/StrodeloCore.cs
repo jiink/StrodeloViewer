@@ -36,6 +36,8 @@ public class StrodeloCore : MonoBehaviour
     private GameObject sunLight;
     private GameObject parentOfLights; // spawn all lights under this object
 
+    private GameObject modelLoader;
+
     private bool rotationLock = false;
     private bool occlusionEnabled = true;
 
@@ -86,7 +88,7 @@ public class StrodeloCore : MonoBehaviour
             return;
         }
         var modelLoaderObject = Instantiate(modelLoaderPrefab);
-        var modelLoader = modelLoaderObject.GetComponent<ModelLoader>();
+        modelLoader = modelLoaderObject.GetComponent<ModelLoader>();
         if (modelLoader == null)
         {
             Debug.LogError("ModelLoader component not found on the instantiated prefab.");
@@ -612,5 +614,16 @@ public class StrodeloCore : MonoBehaviour
     {
         GameObject notification = SpawnMenu(notificationPrefab);
         notification.GetComponent<StrodeloNotification>().Message = message;
+    }
+
+    internal void LoadLocal3DModelAct()
+    {
+        GameObject fileBrowserO = SpawnMenu(_fileBrowserPrefab);
+        FileBrowser fileBrowser = fileBrowserO.GetComponent<FileBrowser>();
+        fileBrowser.FileOpen += (sender, e) =>
+        {
+            ModelLoader m = modelLoader.GetComponent<ModelLoader>();
+            m.ImportAndCreateMeshes(fileBrowser.FullFilePath);
+        };
     }
 }
