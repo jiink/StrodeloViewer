@@ -73,18 +73,9 @@ public class ModelLoader : MonoBehaviour
         GameObject template = Instantiate(modelTemplatePrefab);
         loadedModel.transform.SetParent(template.transform);
 
-        List<Bounds> childBounds = new List<Bounds>();
-        Bounds bounds = new Bounds(loadedModel.transform.position, Vector3.zero);
+        Bounds bounds = new(loadedModel.transform.position, Vector3.zero);
         // Calculate bounding box for collider of whole object including all children
-        foreach (Transform child in loadedModel.transform)
-        {
-            MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
-            if (meshRenderer != null)
-            {
-                childBounds.Add(meshRenderer.bounds);
-                bounds.Encapsulate(meshRenderer.bounds);
-            }
-        }
+        AddBoundsRecursively(loadedModel.transform, ref bounds);
 
         // Need collider for the whole object
         BoxCollider boxCollider = template.AddComponent<BoxCollider>();
@@ -110,6 +101,22 @@ public class ModelLoader : MonoBehaviour
         colliderVisualizer.transform.localScale = boxCollider.size;
         colliderVisualizer.SetActive(false);
     }
+
+    private void AddBoundsRecursively(Transform transform, ref Bounds bounds)
+    {
+        foreach (Transform child in transform)
+        {
+            MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                Debug.Log("Hit!");
+                bounds.Encapsulate(meshRenderer.bounds);
+            }
+            // Recursively call this method for each child
+            AddBoundsRecursively(child, ref bounds);
+        }
+    }
+
     void Start()
     {
         modelTemplatePrefab = Resources.Load<GameObject>("LoadedModelTemplate");

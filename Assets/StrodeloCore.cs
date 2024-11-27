@@ -36,7 +36,7 @@ public class StrodeloCore : MonoBehaviour
     private GameObject sunLight;
     private GameObject parentOfLights; // spawn all lights under this object
 
-    private GameObject modelLoader;
+    private ModelLoader modelLoader;
 
     private bool rotationLock = false;
     private bool occlusionEnabled = true;
@@ -622,8 +622,7 @@ public class StrodeloCore : MonoBehaviour
         FileBrowser fileBrowser = fileBrowserO.GetComponent<FileBrowser>();
         fileBrowser.FileOpen += (sender, e) =>
         {
-            ModelLoader m = modelLoader.GetComponent<ModelLoader>();
-            m.ImportAndCreateMeshes(fileBrowser.FullFilePath);
+            modelLoader.ImportAndCreateMeshes(fileBrowser.FullFilePath);
         };
     }
 }
