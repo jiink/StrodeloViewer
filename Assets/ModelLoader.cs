@@ -45,6 +45,7 @@ public class ModelLoader : MonoBehaviour
                 {
 
                     ProcessLoadedModel(loadedModel);
+                    StrodeloCore.Instance.SpawnNotification("Model loaded!");
                 }
                 else
                 {
@@ -56,6 +57,7 @@ public class ModelLoader : MonoBehaviour
             (error) =>
             {
                 Debug.LogError($"Failed to load model: {error}");
+                StrodeloCore.Instance.SpawnNotification("Failed to load model: " + error);
             });
     }
 

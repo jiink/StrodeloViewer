@@ -30,6 +30,7 @@ public class StrodeloCore : MonoBehaviour
     public EnvironmentDepthManager environmentDepthManager; // Handles occlusion
 
     private GameObject notificationPrefab;
+    private GameObject lightEditMenuPrefab;
     private GameObject pointLightPrefab;
     private GameObject pointLight;
     private GameObject sunLightPrefab;
@@ -66,6 +67,7 @@ public class StrodeloCore : MonoBehaviour
         SelectingLightPosition,
         SelectingLightPower,
         SelectingLightForDeletion,
+        SelectingLightForEditing,
         SelectingSunPosition,
         SelectingSunDirAndPow,
     }
@@ -78,6 +80,7 @@ public class StrodeloCore : MonoBehaviour
         sunLightPrefab = Resources.Load<GameObject>("StrodeloDirectionalLight");
         _fileBrowserPrefab = Resources.Load<GameObject>("FileBrowser Variant");
         notificationPrefab = Resources.Load<GameObject>("StrodeloNotification");
+        lightEditMenuPrefab = Resources.Load<GameObject>("LightEditMenu");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         var receiverObject = Instantiate(receiverPrefab);
@@ -177,6 +180,15 @@ public class StrodeloCore : MonoBehaviour
             laser.endColor = Color.red;
             laser.enabled = true;
         }
+        else if (actionState == ActionState.SelectingLightForEditing)
+        {
+            // Show laser to indicate it's waiting for a selection
+            laser.SetPosition(0, rayInteractor.Origin);
+            laser.SetPosition(1, rayInteractor.End);
+            laser.startColor = Color.blue;
+            laser.endColor = Color.blue;
+            laser.enabled = true;
+        }
         if (actionState == ActionState.Idle)
         {
             laser.enabled = false; // don't need the laser
@@ -272,6 +284,21 @@ public class StrodeloCore : MonoBehaviour
                 return;
             }
             Destroy(light.gameObject);
+            actionState = ActionState.Idle;
+            ClearInstruction();
+        }
+        else if (actionState == ActionState.SelectingLightForEditing)
+        {
+            var light = sender as StrodeloLight;
+            if (light == null)
+            {
+                Debug.LogError("Light is null");
+                return;
+            }
+            // Open a menu to edit the light
+            GameObject lightEditMenu = SpawnMenu(lightEditMenuPrefab);
+            var lem = lightEditMenu.GetComponent<LightEditMenu>();
+            lem.InspectedLight = light.GetComponent<Light>();
             actionState = ActionState.Idle;
             ClearInstruction();
         }
@@ -442,6 +469,19 @@ public class StrodeloCore : MonoBehaviour
         {
             actionState = ActionState.Idle;
             sunLight.GetComponent<StrodeloLight>().EnableCollider();
+        }
+    }
+
+    internal void EditLightAct()
+    {
+        if (actionState == ActionState.SelectingLightForEditing)
+        {
+            actionState = ActionState.Idle;
+        }
+        else
+        {
+            actionState = ActionState.SelectingLightForEditing;
+            SetInstruction("Select a light to edit.");
         }
     }
 

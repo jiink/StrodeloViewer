@@ -40,6 +40,7 @@ public class HandMenu : MonoBehaviour
             new("Inspect Material", null, StrodeloCore.Instance.InspectMaterialAct),
             new("Add Point Light", null, StrodeloCore.Instance.AddPointLightAct),
             new("Add Directional Light", null, StrodeloCore.Instance.AddDirectionalLightAct),
+            new("Edit Light", null, StrodeloCore.Instance.EditLightAct),
             new("Delete Light", null, StrodeloCore.Instance.DeleteLightAct),
             new("(Un)lock Rotation", null, StrodeloCore.Instance.LockRotationToggleAct),
             new("Toggle Occlusion", null, StrodeloCore.Instance.ToggleOcclusionAct),
