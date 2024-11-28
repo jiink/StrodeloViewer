@@ -37,11 +37,49 @@ public class LightEditMenu : MonoBehaviour
         }
     }
 
+    public void SetLightHue(float h)
+    {
+        if (InspectedLight != null)
+        {
+            Color.RGBToHSV(InspectedLight.color, out _, out float s, out float v);
+            InspectedLight.color = Color.HSVToRGB(h, s, v);
+        }
+        else
+        {
+            Debug.LogError("No light assigned to LightEditMenu.");
+        }
+    }
+
+    public void SetLightSaturation(float s)
+    {
+        if (InspectedLight != null)
+        {
+            Color.RGBToHSV(InspectedLight.color, out float h, out _, out float v);
+            InspectedLight.color = Color.HSVToRGB(h, s, v);
+        }
+        else
+        {
+            Debug.LogError("No light assigned to LightEditMenu.");
+        }
+    }
+
     public void SetLightIntensity(float i)
     {
         if (InspectedLight != null)
         {
             InspectedLight.intensity = i;
+        }
+        else
+        {
+            Debug.LogError("No light assigned to LightEditMenu.");
+        }
+    }
+
+    public void SetShadows(bool s)
+    {
+        if (InspectedLight != null)
+        {
+            InspectedLight.shadows = s ? LightShadows.Hard : LightShadows.None;
         }
         else
         {
