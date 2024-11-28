@@ -730,6 +730,7 @@ public class StrodeloCore : MonoBehaviour
         fileBrowser.FileOpen += (sender, e) =>
         {
             _ = LoadSetupFromFilePath(fileBrowser.FullFilePath);
+            Destroy(fileBrowserO);
         };
     }
 
@@ -794,6 +795,7 @@ public class StrodeloCore : MonoBehaviour
             lightComponent.intensity = lightData.intensity;
             lightComponent.range = lightData.range;
             lightComponent.type = lightData.type;
+            
             var sl = light.GetComponent<StrodeloLight>();
             sl.OnSelectAction += OnLightSelected;
         }

@@ -45,9 +45,9 @@ public class ModelLoader : MonoBehaviour
 
                 if (loadedModel != null)
                 {
-                    ProcessLoadedModel(loadedModel, filePath);
+                    var loadedRoot = ProcessLoadedModel(loadedModel, filePath);
                     StrodeloCore.Instance.SpawnNotification("Model loaded!");
-                    tcs.SetResult(loadedModel);
+                    tcs.SetResult(loadedRoot);
                 }
                 else
                 {
@@ -67,12 +67,12 @@ public class ModelLoader : MonoBehaviour
     }
 
 
-    private void ProcessLoadedModel(GameObject loadedModel, string filePath)
+    private GameObject ProcessLoadedModel(GameObject loadedModel, string filePath)
     {
         if (loadedModel == null)
         {
             Debug.LogError("Loaded model is null!");
-            return;
+            return null;
         }
 
         // Process the loaded model
@@ -108,6 +108,8 @@ public class ModelLoader : MonoBehaviour
         colliderVisualizer.transform.localPosition = boxCollider.center;
         colliderVisualizer.transform.localScale = boxCollider.size;
         colliderVisualizer.SetActive(false);
+
+        return template;
     }
 
     private void AddBoundsRecursively(Transform transform, ref Bounds bounds)
