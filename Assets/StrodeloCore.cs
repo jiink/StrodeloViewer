@@ -713,6 +713,7 @@ public class StrodeloCore : MonoBehaviour
             lightData.intensity = lightComponent.intensity;
             lightData.range = lightComponent.range;
             lightData.type = lightComponent.type;
+            lightData.hasShadows = lightComponent.shadows != LightShadows.None;
             setupData.Lights.Add(lightData);
         }
         // Now that setupData is populated, save it to a json file
@@ -795,7 +796,8 @@ public class StrodeloCore : MonoBehaviour
             lightComponent.intensity = lightData.intensity;
             lightComponent.range = lightData.range;
             lightComponent.type = lightData.type;
-            
+            lightComponent.shadows = lightData.hasShadows ? LightShadows.Hard : LightShadows.None;
+
             var sl = light.GetComponent<StrodeloLight>();
             sl.OnSelectAction += OnLightSelected;
         }

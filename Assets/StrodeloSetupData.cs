@@ -23,6 +23,7 @@ public class LightSetupData
     public float intensity;
     public float range;
     public LightType type;
+    public bool hasShadows;
 
     public LightSetupData()
     {
