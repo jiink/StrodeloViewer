@@ -665,4 +665,55 @@ public class StrodeloCore : MonoBehaviour
             modelLoader.ImportAndCreateMeshes(fileBrowser.FullFilePath);
         };
     }
+
+    // Saves the current setup to a file
+    // Things to save:
+    // - The current environment map (file path)
+    // - The current models in the scene (file paths) and their positions and rotations
+    // - The current lights in the scene and their positions, rotations, ranges, intensities, colors, and shadow settings
+    internal void SaveSetupAct()
+    {
+        StrodeloSetupData setupData = new StrodeloSetupData();
+        // Populate setupData with the current setup
+        setupData.EnvironmentMapPath = RenderSettings.skybox.GetTexture("_MainTex").name;
+        setupData.Models = new List<ModelSetupData>();
+        // Models are anything with Selectable Model component
+        //var selectableModels = GameObject.FindGameObjectsWithTag("SelectableObject");
+        var modelObjects = GameObject.FindObjectsOfType<SelectableModel>();
+        Debug.Log($"Num of models: {modelObjects.Length}");
+        foreach (var model in modelObjects)
+        {
+            ModelSetupData modelData = new ModelSetupData();
+            modelData.ModelPath = model.modelFileSourcePath;
+            modelData.pos = model.transform.position;
+            modelData.rot = model.transform.rotation;
+            setupData.Models.Add(modelData);
+        }
+        setupData.Lights = new List<LightSetupData>();
+        var lightObjects = GameObject.FindObjectsOfType<StrodeloLight>();
+        Debug.Log($"Num of lights: {lightObjects.Length}");
+        foreach (var l in lightObjects)
+        {
+            Light lightComponent = l.gameObject.GetComponent<Light>();
+            LightSetupData lightData = new LightSetupData();
+            lightData.pos = l.gameObject.transform.position;
+            lightData.rot = l.gameObject.transform.rotation;
+            lightData.color = lightComponent.color;
+            lightData.intensity = lightComponent.intensity;
+            lightData.range = lightComponent.range;
+            lightData.type = lightComponent.type;
+            setupData.Lights.Add(lightData);
+        }
+        // Now that setupData is populated, save it to a json file
+        Debug.Log(setupData);
+        string json = JsonUtility.ToJson(setupData);
+        string savePath = UnityEngine.Application.persistentDataPath + "/strodelo_setup.json";
+        System.IO.File.WriteAllText(savePath, json);
+        SpawnNotification("Setup saved to " + savePath);
+    }
+
+    internal void LoadSetupAct()
+    {
+        throw new NotImplementedException();
+    }
 }

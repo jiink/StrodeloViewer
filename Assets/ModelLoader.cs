@@ -44,7 +44,7 @@ public class ModelLoader : MonoBehaviour
                 if (loadedModel != null)
                 {
 
-                    ProcessLoadedModel(loadedModel);
+                    ProcessLoadedModel(loadedModel, filePath);
                     StrodeloCore.Instance.SpawnNotification("Model loaded!");
                 }
                 else
@@ -62,7 +62,7 @@ public class ModelLoader : MonoBehaviour
     }
 
 
-    private void ProcessLoadedModel(GameObject loadedModel)
+    private void ProcessLoadedModel(GameObject loadedModel, string filePath)
     {
         if (loadedModel == null)
         {
@@ -91,6 +91,7 @@ public class ModelLoader : MonoBehaviour
         // Have Core listen to wselection events
         SelectableModel selectableModel = template.GetComponent<SelectableModel>();
         selectableModel.Selected += StrodeloCore.Instance.OnModelSelected;
+        selectableModel.modelFileSourcePath = filePath; // just so it can be saved later
 
         template.transform.position = UnityEngine.Camera.main.transform.position +
                                          (UnityEngine.Camera.main.transform.forward * 0.3f);

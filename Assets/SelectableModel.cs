@@ -9,6 +9,7 @@ public class SelectableModel : MonoBehaviour
 
     private Quaternion lockedRotation; // write down rotation once lock happens
     private bool isRotationLocked = false;
+    public string modelFileSourcePath;
 
     void Start()
     {

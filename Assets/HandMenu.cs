@@ -45,6 +45,8 @@ public class HandMenu : MonoBehaviour
             new("(Un)lock Rotation", null, StrodeloCore.Instance.LockRotationToggleAct),
             new("Toggle Occlusion", null, StrodeloCore.Instance.ToggleOcclusionAct),
             new("Reflection Map", null, StrodeloCore.Instance.ReflectionMapAct),
+            new("Save Setup", null, StrodeloCore.Instance.SaveSetupAct),
+            new("Load Setup", null, StrodeloCore.Instance.LoadSetupAct),
             new("Exit", null, StrodeloCore.Instance.ExitAct)
         };
 
