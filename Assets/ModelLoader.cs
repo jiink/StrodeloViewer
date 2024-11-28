@@ -10,6 +10,7 @@ using TriLibCore.General;
 using TriLibCore.Interfaces;
 using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
+using System.Threading.Tasks;
 
 public class ModelLoader : MonoBehaviour
 {
@@ -28,11 +29,12 @@ public class ModelLoader : MonoBehaviour
         ImportAndCreateMeshes(path);
     }
 
-    public void ImportAndCreateMeshes(string filePath)
+    // Returns the loaded model object once its done loading.
+    public async Task<GameObject> ImportAndCreateMeshes(string filePath)
     {
         Debug.Log($"Importing file: {filePath}");
 
-        //var assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
+        var tcs = new TaskCompletionSource<GameObject>();
         AssetLoader.LoadModelFromFile(filePath,
             (assetLoaderContext) =>
             {
@@ -43,13 +45,14 @@ public class ModelLoader : MonoBehaviour
 
                 if (loadedModel != null)
                 {
-
                     ProcessLoadedModel(loadedModel, filePath);
                     StrodeloCore.Instance.SpawnNotification("Model loaded!");
+                    tcs.SetResult(loadedModel);
                 }
                 else
                 {
                     Debug.LogError("Failed to retrieve the loaded model.");
+                    tcs.SetResult(null);
                 }
             },
             (_) => { },
@@ -58,7 +61,9 @@ public class ModelLoader : MonoBehaviour
             {
                 Debug.LogError($"Failed to load model: {error}");
                 StrodeloCore.Instance.SpawnNotification("Failed to load model: " + error);
+                tcs.SetResult(null);
             });
+        return await tcs.Task;
     }
 
 

@@ -7,6 +7,7 @@ using Superla.RadianceHDR;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Xml.Schema;
 using TMPro;
 using UnityEngine;
@@ -38,6 +39,7 @@ public class StrodeloCore : MonoBehaviour
     private GameObject parentOfLights; // spawn all lights under this object
 
     private ModelLoader modelLoader;
+    private string currentEnvironmentMapPath;
 
     private bool rotationLock = false;
     private bool occlusionEnabled = true;
@@ -66,7 +68,7 @@ public class StrodeloCore : MonoBehaviour
         SelectingModelForInspection,
         SelectingLightPosition,
         SelectingLightPower,
-        SelectingLightForDeletion,
+        SelectingForDeletion,
         SelectingLightForEditing,
         SelectingSunPosition,
         SelectingSunDirAndPow,
@@ -171,7 +173,7 @@ public class StrodeloCore : MonoBehaviour
             laser.endColor = Color.yellow;
             laser.enabled = true;
         }
-        else if (actionState == ActionState.SelectingLightForDeletion)
+        else if (actionState == ActionState.SelectingForDeletion)
         {
             // Show laser to indicate it's waiting for a selection
             laser.SetPosition(0, rayInteractor.Origin);
@@ -265,6 +267,13 @@ public class StrodeloCore : MonoBehaviour
             ClearInstruction();
             SpawnMaterialInspector(selectedModel);
         }
+        else if (actionState == ActionState.SelectingForDeletion)
+        {
+            Destroy(selectedModel);
+            selectedModel = null;
+            actionState = ActionState.Idle;
+            ClearInstruction();
+        }
         // You happen to be pointing at the model when selecting a surface, so handle the click here.
         else if (actionState == ActionState.SelectingSurface)
         {
@@ -275,7 +284,7 @@ public class StrodeloCore : MonoBehaviour
 
     public void OnLightSelected(object sender, EventArgs e)
     {
-        if (actionState == ActionState.SelectingLightForDeletion)
+        if (actionState == ActionState.SelectingForDeletion)
         {
             var light = sender as StrodeloLight;
             if (light == null)
@@ -485,15 +494,15 @@ public class StrodeloCore : MonoBehaviour
         }
     }
 
-    internal void DeleteLightAct()
+    internal void DeleteThingAct()
     {
-        if (actionState == ActionState.SelectingLightForDeletion)
+        if (actionState == ActionState.SelectingForDeletion)
         {
             actionState = ActionState.Idle;
         }
         else
         {
-            actionState = ActionState.SelectingLightForDeletion;
+            actionState = ActionState.SelectingForDeletion;
             SetInstruction("Select a light to delete.");
         }
     }
@@ -578,6 +587,7 @@ public class StrodeloCore : MonoBehaviour
         fileBrowser.FileOpen += (sender, e) =>
         {
             SetEnvMapFromFilePath(fileBrowser.FullFilePath);
+            currentEnvironmentMapPath = fileBrowser.FullFilePath; // so it can be saved to json later
         };
     }
 
@@ -675,10 +685,11 @@ public class StrodeloCore : MonoBehaviour
     {
         StrodeloSetupData setupData = new StrodeloSetupData();
         // Populate setupData with the current setup
-        setupData.EnvironmentMapPath = RenderSettings.skybox.GetTexture("_MainTex").name;
+        setupData.EnvironmentMapPath = currentEnvironmentMapPath;
         setupData.Models = new List<ModelSetupData>();
         // Models are anything with Selectable Model component
-        //var selectableModels = GameObject.FindGameObjectsWithTag("SelectableObject");
+        // Materials for each model not supported yet but that would 
+        // be like Material #0: "<texturepath>", <metallic>, <smoothness>, Material #1: ...
         var modelObjects = GameObject.FindObjectsOfType<SelectableModel>();
         Debug.Log($"Num of models: {modelObjects.Length}");
         foreach (var model in modelObjects)
@@ -705,15 +716,86 @@ public class StrodeloCore : MonoBehaviour
             setupData.Lights.Add(lightData);
         }
         // Now that setupData is populated, save it to a json file
-        Debug.Log(setupData);
         string json = JsonUtility.ToJson(setupData);
-        string savePath = UnityEngine.Application.persistentDataPath + "/strodelo_setup.json";
+        string date = DateTime.Now.ToString("yy-MM-dd_HH-mm-ss");
+        string savePath = UnityEngine.Application.persistentDataPath + $"/strodelo_setup-{date}.json";
         System.IO.File.WriteAllText(savePath, json);
         SpawnNotification("Setup saved to " + savePath);
     }
 
     internal void LoadSetupAct()
     {
-        throw new NotImplementedException();
+        GameObject fileBrowserO = SpawnMenu(_fileBrowserPrefab);
+        FileBrowser fileBrowser = fileBrowserO.GetComponent<FileBrowser>();
+        fileBrowser.FileOpen += (sender, e) =>
+        {
+            _ = LoadSetupFromFilePath(fileBrowser.FullFilePath);
+        };
+    }
+
+    // for loading json file and affecting the scene accordingly
+    private async Task LoadSetupFromFilePath(string fullFilePath)
+    {
+        if (string.IsNullOrEmpty(fullFilePath) || !System.IO.File.Exists(fullFilePath))
+        {
+            Debug.LogError("Invalid file path.");
+            return;
+        }
+        // First, clear everything (destroy all lights and loaded models)
+        foreach (Transform child in parentOfLights.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        var modelObjects = GameObject.FindObjectsOfType<SelectableModel>();
+        foreach (var model in modelObjects)
+        {
+            Destroy(model.gameObject);
+        }
+        Debug.Log("Loading setup...");
+        // Parse the file into a StrodeloSetupData object
+        string json = System.IO.File.ReadAllText(fullFilePath);
+        StrodeloSetupData setupData = JsonUtility.FromJson<StrodeloSetupData>(json);
+        // Set the environment map
+        SetEnvMapFromFilePath(setupData.EnvironmentMapPath);
+        // Load the models
+        foreach (var modelData in setupData.Models)
+        {
+            Debug.Log($"Loading model...");
+            GameObject m = await modelLoader.ImportAndCreateMeshes(modelData.ModelPath);
+            // Move the model to the saved position and rotation
+            if (m != null)
+            {
+                m.transform.position = modelData.pos;
+                m.transform.rotation = modelData.rot;
+            }
+        }
+        // Load the lights
+        foreach (var lightData in setupData.Lights)
+        {
+            Debug.Log($"Loading light...");
+            GameObject light;
+            if (lightData.type == LightType.Point)
+            {
+                light = Instantiate(pointLightPrefab, parentOfLights.transform);
+            }
+            else if (lightData.type == LightType.Directional)
+            {
+                light = Instantiate(sunLightPrefab, parentOfLights.transform);
+            }
+            else
+            {
+                Debug.LogError("Unknown light type.");
+                continue;
+            }
+            light.transform.position = lightData.pos;
+            light.transform.rotation = lightData.rot;
+            Light lightComponent = light.GetComponent<Light>();
+            lightComponent.color = lightData.color;
+            lightComponent.intensity = lightData.intensity;
+            lightComponent.range = lightData.range;
+            lightComponent.type = lightData.type;
+            var sl = light.GetComponent<StrodeloLight>();
+            sl.OnSelectAction += OnLightSelected;
+        }
     }
 }

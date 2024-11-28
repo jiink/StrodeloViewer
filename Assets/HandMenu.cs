@@ -36,12 +36,12 @@ public class HandMenu : MonoBehaviour
         {
             new("Load 3D model", null, StrodeloCore.Instance.LoadLocal3DModelAct),
             new("Place on Surface", null, StrodeloCore.Instance.PlaceOnSurfaceAct),
+            new("Delete", null, StrodeloCore.Instance.DeleteThingAct),
             new("Debug", null, StrodeloCore.Instance.DebugButtonPressed),
             new("Inspect Material", null, StrodeloCore.Instance.InspectMaterialAct),
             new("Add Point Light", null, StrodeloCore.Instance.AddPointLightAct),
             new("Add Directional Light", null, StrodeloCore.Instance.AddDirectionalLightAct),
             new("Edit Light", null, StrodeloCore.Instance.EditLightAct),
-            new("Delete Light", null, StrodeloCore.Instance.DeleteLightAct),
             new("(Un)lock Rotation", null, StrodeloCore.Instance.LockRotationToggleAct),
             new("Toggle Occlusion", null, StrodeloCore.Instance.ToggleOcclusionAct),
             new("Reflection Map", null, StrodeloCore.Instance.ReflectionMapAct),
@@ -49,13 +49,7 @@ public class HandMenu : MonoBehaviour
             new("Load Setup", null, StrodeloCore.Instance.LoadSetupAct),
             new("Exit", null, StrodeloCore.Instance.ExitAct)
         };
-
         InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);
-        // Hook up the buttons to the core
-        //placeOnSurfaceButton.onClick.AddListener(StrodeloCore.Instance.PlaceOnSurfaceAct);
-        //debugButton.onClick.AddListener(StrodeloCore.Instance.DebugButtonPressed);
-        //inspectMaterialButton.onClick.AddListener(StrodeloCore.Instance.InspectMaterialAct);
-        //addPointLightButton.onClick.AddListener(StrodeloCore.Instance.AddPointLightAct);
     }
 
     // Spawns the buttons and hooks up the events
