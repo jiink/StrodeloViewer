@@ -16,7 +16,7 @@ public class ModelLoader : MonoBehaviour
 {
     private GameObject modelTemplatePrefab;
     private GameObject cubeVisualizerPrefab;
-
+    private UnityEngine.Material occlusionFriendlyLit;
     internal void OnFileReceived(object sender, EventArgs e)
     {
         Receiver receiver = sender as Receiver;
@@ -39,10 +39,7 @@ public class ModelLoader : MonoBehaviour
             (assetLoaderContext) =>
             {
                 Debug.Log("Model imported successfully!");
-
-
                 GameObject loadedModel = assetLoaderContext.RootGameObject;
-
                 if (loadedModel != null)
                 {
                     var loadedRoot = ProcessLoadedModel(loadedModel, filePath);
@@ -109,6 +106,19 @@ public class ModelLoader : MonoBehaviour
         colliderVisualizer.transform.localScale = boxCollider.size;
         colliderVisualizer.SetActive(false);
 
+        // Need to convert its materials to the one we have that works with mixed reality occlusion
+        //Renderer[] renderers = loadedModel.GetComponentsInChildren<Renderer>();
+        //foreach (Renderer renderer in renderers)
+        //{
+        //    UnityEngine.Material[] materials = renderer.materials;
+        //    for (int i = 0; i < materials.Length; i++)
+        //    {
+        //        UnityEngine.Material material = materials[i];
+        //        material.shader = occlusionFriendlyLit.shader;
+        //    }
+        //    renderer.materials = materials;
+        //}
+
         return template;
     }
 
@@ -131,6 +141,7 @@ public class ModelLoader : MonoBehaviour
     {
         modelTemplatePrefab = Resources.Load<GameObject>("LoadedModelTemplate");
         cubeVisualizerPrefab = Resources.Load<GameObject>("LineCube");
+        occlusionFriendlyLit = Resources.Load<UnityEngine.Material>("OcclusionCompatibleLit");
     }
 
     void Update()
