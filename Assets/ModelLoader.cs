@@ -107,19 +107,41 @@ public class ModelLoader : MonoBehaviour
         colliderVisualizer.SetActive(false);
 
         // Need to convert its materials to the one we have that works with mixed reality occlusion
-        //Renderer[] renderers = loadedModel.GetComponentsInChildren<Renderer>();
-        //foreach (Renderer renderer in renderers)
-        //{
-        //    UnityEngine.Material[] materials = renderer.materials;
-        //    for (int i = 0; i < materials.Length; i++)
-        //    {
-        //        UnityEngine.Material material = materials[i];
-        //        material.shader = occlusionFriendlyLit.shader;
-        //    }
-        //    renderer.materials = materials;
-        //}
+        ReplaceMaterialsRecursively(loadedModel.transform, occlusionFriendlyLit);
 
         return template;
+    }
+
+    private void ReplaceMaterialsRecursively(Transform transform, UnityEngine.Material newMaterial)
+    {
+        foreach (Transform child in transform)
+        {
+            MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                //UnityEngine.Material[] materials = meshRenderer.materials;
+                // copy the materials array into a new array
+                int numMats = meshRenderer.materials.Length;
+                if (numMats == 0)
+                {
+                    Debug.LogError("No materials found on mesh renderer!");
+                    return;
+                }
+                UnityEngine.Material[] newMats = new UnityEngine.Material[numMats];
+                Debug.Log($"Number of materials: {numMats}");
+                for (int i = 0; i < numMats; i++)
+                {
+                    UnityEngine.Material oldMat = meshRenderer.materials[i];
+                    UnityEngine.Material newMat = new(newMaterial);
+                    // transfer properties
+                    //newMat.CopyPropertiesFromMaterial(oldMat);
+                    newMats[i] = newMat;
+                }
+                meshRenderer.materials = newMats;
+            }
+            // Recursively call this method for each child
+            ReplaceMaterialsRecursively(child, newMaterial);
+        }
     }
 
     private void AddBoundsRecursively(Transform transform, ref Bounds bounds)
