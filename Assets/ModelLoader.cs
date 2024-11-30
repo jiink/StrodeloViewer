@@ -36,7 +36,7 @@ public class ModelLoader : MonoBehaviour
 
         var tcs = new TaskCompletionSource<GameObject>();
         AssetLoader.LoadModelFromFile(filePath,
-            (assetLoaderContext) =>
+            (assetLoaderContext) => // when model is done loading
             {
                 Debug.Log("Model imported successfully!");
                 GameObject loadedModel = assetLoaderContext.RootGameObject;
@@ -52,7 +52,10 @@ public class ModelLoader : MonoBehaviour
                     tcs.SetResult(null);
                 }
             },
-            (_) => { },
+            (assetLoaderContext) => // when model's materials are done loading
+            {
+                ReplaceMaterialsRecursively(assetLoaderContext.RootGameObject.transform, occlusionFriendlyLit);
+            },
             (_, _) => { },
             (error) =>
             {
@@ -106,40 +109,36 @@ public class ModelLoader : MonoBehaviour
         colliderVisualizer.transform.localScale = boxCollider.size;
         colliderVisualizer.SetActive(false);
 
-        // Need to convert its materials to the one we have that works with mixed reality occlusion
-        ReplaceMaterialsRecursively(loadedModel.transform, occlusionFriendlyLit);
-
         return template;
     }
 
     private void ReplaceMaterialsRecursively(Transform transform, UnityEngine.Material newMaterial)
     {
+        MeshRenderer meshRenderer = transform.gameObject.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            // copy the materials array into a new array
+            int numMats = meshRenderer.materials.Length;
+            if (numMats == 0)
+            {
+                Debug.LogError("No materials found on mesh renderer!");
+                return;
+            }
+            UnityEngine.Material[] newMats = new UnityEngine.Material[numMats];
+            Debug.Log($"Number of materials: {numMats}");
+            for (int i = 0; i < numMats; i++)
+            {
+                UnityEngine.Material oldMat = meshRenderer.materials[i];
+                UnityEngine.Material newMat = new(newMaterial);
+                // transfer properties
+                //newMat.CopyPropertiesFromMaterial(oldMat);
+                newMats[i] = newMat;
+            }
+            meshRenderer.materials = newMats;
+        }
+        // Recursively call this method for each child
         foreach (Transform child in transform)
         {
-            MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
-            if (meshRenderer != null)
-            {
-                //UnityEngine.Material[] materials = meshRenderer.materials;
-                // copy the materials array into a new array
-                int numMats = meshRenderer.materials.Length;
-                if (numMats == 0)
-                {
-                    Debug.LogError("No materials found on mesh renderer!");
-                    return;
-                }
-                UnityEngine.Material[] newMats = new UnityEngine.Material[numMats];
-                Debug.Log($"Number of materials: {numMats}");
-                for (int i = 0; i < numMats; i++)
-                {
-                    UnityEngine.Material oldMat = meshRenderer.materials[i];
-                    UnityEngine.Material newMat = new(newMaterial);
-                    // transfer properties
-                    //newMat.CopyPropertiesFromMaterial(oldMat);
-                    newMats[i] = newMat;
-                }
-                meshRenderer.materials = newMats;
-            }
-            // Recursively call this method for each child
             ReplaceMaterialsRecursively(child, newMaterial);
         }
     }
