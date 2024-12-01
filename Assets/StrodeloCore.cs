@@ -105,6 +105,9 @@ public class StrodeloCore : MonoBehaviour
         laser.startWidth = 0.01f;
         laser.endWidth = 0.01f;
         _instance = this;
+
+        // Update lighting situation so metallic things dont look pitch black
+        ApplyDefaultEnvMap();
     }
 
     void Update()
@@ -586,12 +589,40 @@ public class StrodeloCore : MonoBehaviour
         FileBrowser fileBrowser = fileBrowserO.GetComponent<FileBrowser>();
         fileBrowser.FileOpen += (sender, e) =>
         {
-            SetEnvMapFromFilePath(fileBrowser.FullFilePath);
+            ApplyEnvironmentMap(fileBrowser.FullFilePath);
             currentEnvironmentMapPath = fileBrowser.FullFilePath; // so it can be saved to json later
         };
     }
 
-    private void SetEnvMapFromFilePath(string fullFilePath)
+    // Necessary to run this after updating the skybox material/texture so it affects
+    // the ambient lighting
+    private void UpdateEnvironmentLighting()
+    {
+        ReflectionProbe reflectionProbe = FindObjectOfType<ReflectionProbe>();
+        if (reflectionProbe != null)
+        {
+            // Exclude all objects from being baked into the reflection probe
+            reflectionProbe.cullingMask = 0;
+            reflectionProbe.RenderProbe();
+        }
+        else
+        {
+            Debug.LogError("Reflection probe not found.");
+        }
+        DynamicGI.UpdateEnvironment();
+        Debug.Log("Updated environment lighting.");
+    }
+
+    private void ApplyDefaultEnvMap()
+    {
+        Debug.Log("Applying default skybox...");
+        Material defaultSky = Resources.Load<Material>("DefaultSkybox");
+        RenderSettings.skybox = defaultSky;
+        UpdateEnvironmentLighting();
+        Debug.Log("Applied default environment map.");
+    }
+
+    private void ApplyEnvironmentMap(string fullFilePath)
     {
         // make a new "Skybox/Panoramic" material and set its texture to the loaded texture
         Material newSkyMat = new Material(Shader.Find("Skybox/Panoramic"));
@@ -636,18 +667,7 @@ public class StrodeloCore : MonoBehaviour
             // Change texture of material being used for skybox, which is "Skybox/Panoramic"
             //RenderSettings.skybox.SetTexture("_MainTex", _texture);
             RenderSettings.skybox = newSkyMat;
-            ReflectionProbe reflectionProbe = FindObjectOfType<ReflectionProbe>();
-            if (reflectionProbe != null)
-            {
-                // Exclude all objects from being baked into the reflection probe
-                reflectionProbe.cullingMask = 0;
-                reflectionProbe.RenderProbe();
-            }
-            else
-            {
-                Debug.LogError("Reflection probe not found.");
-            }
-            DynamicGI.UpdateEnvironment();
+            UpdateEnvironmentLighting();
         }
         catch (Exception ex)
         {
@@ -758,7 +778,7 @@ public class StrodeloCore : MonoBehaviour
         string json = System.IO.File.ReadAllText(fullFilePath);
         StrodeloSetupData setupData = JsonUtility.FromJson<StrodeloSetupData>(json);
         // Set the environment map
-        SetEnvMapFromFilePath(setupData.EnvironmentMapPath);
+        ApplyEnvironmentMap(setupData.EnvironmentMapPath);
         // Load the models
         foreach (var modelData in setupData.Models)
         {

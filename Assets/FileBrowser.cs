@@ -51,7 +51,6 @@ public class FileBrowser : MonoBehaviour
                 if ((fileSystemInfo.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
                 {
                     // It's a directory
-                    Debug.Log($"{fileSystemInfo.Name} is a directory.");
                     fileListing.Selected += (sender, e) =>
                     {
                         CurrentPath = Path.Combine(CurrentPath, fileListing.FileName);
@@ -60,7 +59,6 @@ public class FileBrowser : MonoBehaviour
                 else
                 {
                     // It's a file
-                    Debug.Log($"{fileSystemInfo.Name} is a file.");
                     // Subscribe to event so we know when button is pressed
                     fileListing.Selected += onFileListingSelected;
                 }
