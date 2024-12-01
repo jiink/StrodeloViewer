@@ -38,6 +38,10 @@ public class StrodeloCore : MonoBehaviour
     private GameObject sunLight;
     private GameObject parentOfLights; // spawn all lights under this object
 
+    private EffectMesh effectMesh;
+    private Material effectMeshWireMat;
+    private Material effectMeshShadowCatchMat;
+
     private ModelLoader modelLoader;
     private string currentEnvironmentMapPath;
 
@@ -83,6 +87,13 @@ public class StrodeloCore : MonoBehaviour
         _fileBrowserPrefab = Resources.Load<GameObject>("FileBrowser Variant");
         notificationPrefab = Resources.Load<GameObject>("StrodeloNotification");
         lightEditMenuPrefab = Resources.Load<GameObject>("LightEditMenu");
+        effectMesh = FindObjectOfType<EffectMesh>();
+        if (effectMesh == null)
+        {
+            Debug.LogError("StrodeloCore expected to find an EffectMesh.");
+        }
+        effectMeshWireMat = Resources.Load<Material>("RoomBoxEffects");
+        effectMeshShadowCatchMat = Resources.Load<Material>("Custom_Shadow Receiver");
         instructionBoard = handMenu.instructionBoard;
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         var receiverObject = Instantiate(receiverPrefab);
@@ -262,6 +273,7 @@ public class StrodeloCore : MonoBehaviour
         if (actionState == ActionState.SelectingModelForSurface)
         {
             actionState = ActionState.SelectingSurface;
+            SetRoomMaterial(effectMeshWireMat); // Show the room mesh clearly
             SetInstruction("Select a surface to place the model on.");
         }
         else if (actionState == ActionState.SelectingModelForInspection)
@@ -281,6 +293,8 @@ public class StrodeloCore : MonoBehaviour
         else if (actionState == ActionState.SelectingSurface)
         {
             actionState = ActionState.Idle;
+            // return room mesh to normal appearance
+            SetRoomMaterial(effectMeshShadowCatchMat); 
             ClearInstruction();
         }
     }
@@ -672,6 +686,20 @@ public class StrodeloCore : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogError($"Error loading texture: {ex.Message}");
+        }
+    }
+
+    private void SetRoomMaterial(Material mat)
+    {
+        // Find children of everything with an MRUKAnchor component
+        var anchors = FindObjectsOfType<MRUKAnchor>();
+        foreach (var anchor in anchors)
+        {
+            var meshRenderer = anchor.GetComponentInChildren<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                meshRenderer.material = mat;
+            }
         }
     }
 
