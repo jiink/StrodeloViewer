@@ -26,6 +26,10 @@ public class HandMenu : MonoBehaviour
 
     private HButtonEntry[] hButtonEntries;
 
+    private const float stillnessTimerMaxTimeS = 1.5f;
+    private float stillnessTimer = 0f;
+    private FaceUser faceUser;
+
     void Start()
     {
         _visual = transform.GetChild(0).gameObject;
@@ -50,6 +54,12 @@ public class HandMenu : MonoBehaviour
             new("Exit", null, StrodeloCore.Instance.ExitAct)
         };
         InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);
+
+        faceUser = GetComponent<FaceUser>();
+        if (faceUser == null)
+        {
+            Debug.LogError("HandMenu needs a FaceUser component to work properly.");
+        }
     }
 
     // Spawns the buttons and hooks up the events
@@ -65,56 +75,68 @@ public class HandMenu : MonoBehaviour
 
     void Update()
     {
-        // Which hand is the user looking at more?
-        Vector3 dirToLeftHand = (LeftHandAnchor.position - mainCamera.transform.position).normalized;
-        float dotL = Vector3.Dot(mainCamera.transform.forward, dirToLeftHand);
-        Vector3 dirToRightHand = (RightHandAnchor.position - mainCamera.transform.position).normalized;
-        float dotR = Vector3.Dot(mainCamera.transform.forward, dirToRightHand);
-        // See if palm is facing user
-        leftHand.GetJointPose(HandJointId.HandPinky0, out Pose leftPalmPose);
-        rightHand.GetJointPose(HandJointId.HandPinky0, out Pose rightPalmPose);
-        float palmDotL = Vector3.Dot(mainCamera.transform.forward, leftPalmPose.up * -1f);
-        float palmDotR = Vector3.Dot(mainCamera.transform.forward, rightPalmPose.up);
-        float scoreL = dotL + palmDotL;
-        float scoreR = dotR + palmDotR;
-        Vector3 targetPos;
-        if (!isLeftHandAvailableForMenu)
-        {
-            scoreL = 0f;
-        }
-        if (!isRightHandAvailableForMenu)
-        {
-            scoreR = 0f;
-        }
-        if (scoreL > scoreR)
-        {
-            // Move object to in front of the left palm, offset away from it
-            targetPos = leftPalmPose.position + leftPalmPose.up * distFromPalm;
-            // Also offset it away from the face cause its too close
-            targetPos += mainCamera.transform.forward * distFromFace;
-        }
-        else
-        {
-            targetPos = rightPalmPose.position + (rightPalmPose.up * -1f) * distFromPalm;
-            targetPos += mainCamera.transform.forward * distFromFace;
-        }
-        float maxScore = Mathf.Max(scoreL, scoreR);
-        // TODO: make the menus not show up if the hand is not in an open palm pose.
-        // otherwise the menu is annoying showing up when grabbing objects.
-        if (maxScore < 0.7f)
-        {
-            // Hide the menu if the user is looking away from both hands
-            _visual.SetActive(false);
-        }
-        else
-        {
-            _visual.SetActive(true);
-            transform.position = Vector3.Lerp(transform.position, targetPos, 0.1f);
-        }
 
-        if (debugOutput != null)
+        // Update stillness timer.
+        if (stillnessTimer > 0f)
         {
-            debugOutput.text = $"dotL: {dotL}\ndotR: {dotR}";
+            stillnessTimer -= Time.deltaTime;
+            faceUser.enabled = false;
+        }
+        else
+        {
+            // menu is allowed to move. move it into a comfortable position above an open hand.
+            faceUser.enabled = true;
+            // Which hand is the user looking at more?
+            Vector3 dirToLeftHand = (LeftHandAnchor.position - mainCamera.transform.position).normalized;
+            float dotL = Vector3.Dot(mainCamera.transform.forward, dirToLeftHand);
+            Vector3 dirToRightHand = (RightHandAnchor.position - mainCamera.transform.position).normalized;
+            float dotR = Vector3.Dot(mainCamera.transform.forward, dirToRightHand);
+            // See if palm is facing user
+            leftHand.GetJointPose(HandJointId.HandPinky0, out Pose leftPalmPose);
+            rightHand.GetJointPose(HandJointId.HandPinky0, out Pose rightPalmPose);
+            float palmDotL = Vector3.Dot(mainCamera.transform.forward, leftPalmPose.up * -1f);
+            float palmDotR = Vector3.Dot(mainCamera.transform.forward, rightPalmPose.up);
+            float scoreL = dotL + palmDotL;
+            float scoreR = dotR + palmDotR;
+            Vector3 targetPos;
+            if (!isLeftHandAvailableForMenu)
+            {
+                scoreL = 0f;
+            }
+            if (!isRightHandAvailableForMenu)
+            {
+                scoreR = 0f;
+            }
+            if (scoreL > scoreR)
+            {
+                // Move object to in front of the left palm, offset away from it
+                targetPos = leftPalmPose.position + leftPalmPose.up * distFromPalm;
+                // Also offset it away from the face cause its too close
+                targetPos += mainCamera.transform.forward * distFromFace;
+            }
+            else
+            {
+                targetPos = rightPalmPose.position + (rightPalmPose.up * -1f) * distFromPalm;
+                targetPos += mainCamera.transform.forward * distFromFace;
+            }
+            float maxScore = Mathf.Max(scoreL, scoreR);
+            // TODO: make the menus not show up if the hand is not in an open palm pose.
+            // otherwise the menu is annoying showing up when grabbing objects.
+            if (maxScore < 0.7f)
+            {
+                // Hide the menu if the user is looking away from both hands
+                _visual.SetActive(false);
+            }
+            else
+            {
+                _visual.SetActive(true);
+                transform.position = Vector3.Lerp(transform.position, targetPos, 0.1f);
+            }
+
+            if (debugOutput != null)
+            {
+                debugOutput.text = $"dotL: {dotL}\ndotR: {dotR}";
+            }
         }
     }
 
@@ -150,6 +172,14 @@ public class HandMenu : MonoBehaviour
     public void SetRightHandAvailableForMenuTrue()
     {
         isRightHandAvailableForMenu = true;
+    }
+
+    // It's super frustrating to interact with a menu that follows your hands,
+    // so bind this so when the user is interested in using the menu, it stays still
+    // for a certain amount of time which is reset every time this function is called.
+    public void ResetStillnessTimer()
+    {
+        stillnessTimer = stillnessTimerMaxTimeS;
     }
 }
 
