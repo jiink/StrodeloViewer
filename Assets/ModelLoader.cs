@@ -131,7 +131,7 @@ public class ModelLoader : MonoBehaviour
                 UnityEngine.Material oldMat = meshRenderer.materials[i];
                 UnityEngine.Material newMat = new(newMaterial);
                 // transfer properties
-                //newMat.CopyPropertiesFromMaterial(oldMat);
+                newMat.CopyPropertiesFromMaterial(oldMat);
                 newMats[i] = newMat;
             }
             meshRenderer.materials = newMats;
