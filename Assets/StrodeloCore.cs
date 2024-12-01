@@ -119,11 +119,6 @@ public class StrodeloCore : MonoBehaviour
 
         // Update lighting situation so metallic things dont look pitch black
         ApplyDefaultEnvMap();
-
-        // TODO: Find the MRUKRoom component and set it
-        // and all its childern to be on the Models collision layer
-        // so it doesn't interfere with UI
-
     }
 
     void Update()
@@ -854,5 +849,53 @@ public class StrodeloCore : MonoBehaviour
             var sl = light.GetComponent<StrodeloLight>();
             sl.OnSelectAction += OnLightSelected;
         }
+    }
+
+    // After the MRUK Scene Loaded Event happens, there seems to still
+    // be some time before the objects with collisions show up :|
+    public void ApplyRoomCollisionLayerSoon()
+    {
+        Debug.Log(">>>> IT'S HAPPENING SOON.");
+        CallAfterDelay.Create(3f, ApplyRoomCollisionLayer);
+    }
+
+    // So UI panels can avoid colliding with the room.
+    // Set this to be called on MRUK's Scene Loaded Event (or Room Created
+    // Event? I dunno, but the scene loaded one happens after the room created one)
+    // Actually scratch that, see ApplyRoomCollisionLayerSoon's comment.
+    public void ApplyRoomCollisionLayer()
+    {
+        Debug.Log(">>>> IT'S HAPPENING NOW!");
+        int modelsLayer = LayerMask.NameToLayer("Models");
+        MRUKRoom room = FindObjectOfType<MRUKRoom>();
+        if (room != null)
+        {
+            SetLayerRecursively(room.gameObject, modelsLayer);
+        }
+        else
+        {
+            Debug.LogWarning("MRUKRoom component not found in the scene.");
+        }
+    }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        if (obj == null)
+        {
+            return;
+        }
+        obj.layer = newLayer;
+        foreach (Transform child in obj.transform)
+        {
+            if (child != null)
+            {
+                SetLayerRecursively(child.gameObject, newLayer);
+            }
+        }
+    }
+
+    public void Debugmsg(string m)
+    {
+        Debug.LogError($">>>>> {m}");
     }
 }
