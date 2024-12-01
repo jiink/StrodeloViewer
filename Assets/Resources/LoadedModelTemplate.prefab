@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4453242896639788327}
   - component: {fileID: 8427404925024539752}
   - component: {fileID: 6028507802056474248}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LoadedModelTemplate
   m_TagString: SelectableObject
   m_Icon: {fileID: 0}
@@ -268,3 +268,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8927eb62011a4224786527a8466bc9f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  modelFileSourcePath: 

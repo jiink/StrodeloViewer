@@ -119,6 +119,11 @@ public class StrodeloCore : MonoBehaviour
 
         // Update lighting situation so metallic things dont look pitch black
         ApplyDefaultEnvMap();
+
+        // TODO: Find the MRUKRoom component and set it
+        // and all its childern to be on the Models collision layer
+        // so it doesn't interfere with UI
+
     }
 
     void Update()

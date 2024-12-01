@@ -15,6 +15,7 @@ TagManager:
   - QDSUIToggleButton
   - QDSUITextSecondaryColor
   - Sun
+  - QDSUIToggleSwitch
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Models
   - 
   - 
   - 

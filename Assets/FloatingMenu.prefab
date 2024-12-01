@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 1971096099517957623}
   - component: {fileID: 8183597569869130055}
   - component: {fileID: 7374316720167402168}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: FloatingMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376,6 +376,10 @@ PrefabInstance:
       value: EmptyUIBackplateWithCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 2121831639775495873, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121831639775495873, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -386,6 +390,10 @@ PrefabInstance:
     - target: {fileID: 2214802932178273543, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
       propertyPath: _size.y
       value: 900
+      objectReference: {fileID: 0}
+    - target: {fileID: 3080749367930436606, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3563149335964526229, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
       propertyPath: m_AnchorMax.y
@@ -410,6 +418,18 @@ PrefabInstance:
     - target: {fileID: 3563149335964526229, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5864928163828890914, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7348513585209113114, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599484639390949400, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8871935754367020192, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
       propertyPath: m_SizeDelta.x
@@ -460,6 +480,14 @@ PrefabInstance:
     - target: {fileID: 1153402752191318172, guid: 1afe17518a14213478afccad59687b1c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1257142145146988476, guid: 1afe17518a14213478afccad59687b1c, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1595688751747936003, guid: 1afe17518a14213478afccad59687b1c, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1706241386746814278, guid: 1afe17518a14213478afccad59687b1c, type: 3}
       propertyPath: m_AnchorMax.y
@@ -548,6 +576,10 @@ PrefabInstance:
     - target: {fileID: 5475183150643663114, guid: 1afe17518a14213478afccad59687b1c, type: 3}
       propertyPath: m_Name
       value: CloseButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5475183150643663114, guid: 1afe17518a14213478afccad59687b1c, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6120366951445049798, guid: 1afe17518a14213478afccad59687b1c, type: 3}
       propertyPath: m_AnchorMax.y
