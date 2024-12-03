@@ -615,6 +615,7 @@ public class StrodeloCore : MonoBehaviour
         ReflectionProbe reflectionProbe = FindObjectOfType<ReflectionProbe>();
         if (reflectionProbe != null)
         {
+            Debug.Log($"Found reflection probe on {reflectionProbe.gameObject.name}.");
             // Exclude all objects from being baked into the reflection probe
             reflectionProbe.cullingMask = 0;
             reflectionProbe.RenderProbe();
