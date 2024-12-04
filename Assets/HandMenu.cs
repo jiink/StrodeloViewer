@@ -15,7 +15,6 @@ public class HandMenu : MonoBehaviour
     public float distFromPalm = 0.15f;
     public float distFromFace = 0.1f;
     public TextMeshPro debugOutput;
-    public GameObject handMenuButtonPrefab; // This is a template that has its picture and label and action changed accordingly.
     public Transform buttonsParent;
     public TextMeshProUGUI instructionBoard;
     private Camera mainCamera;
@@ -34,6 +33,8 @@ public class HandMenu : MonoBehaviour
     {
         _visual = transform.GetChild(0).gameObject;
         mainCamera = Camera.main;
+        // This is a template that has its picture and label and action changed accordingly.
+        GameObject handMenuButtonPrefab = Resources.Load<GameObject>("HandMenuButton");
 
         // Define data for all buttons
         hButtonEntries = new HButtonEntry[]
@@ -183,7 +184,7 @@ public class HandMenu : MonoBehaviour
     }
 }
 
-struct HButtonEntry
+public struct HButtonEntry
 {
     public string Name;
     public Sprite Icon;
