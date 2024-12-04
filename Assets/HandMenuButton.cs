@@ -16,7 +16,7 @@ public class HandMenuButton : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     public void OnHover(BaseEventData eventData)
@@ -25,8 +25,7 @@ public class HandMenuButton : MonoBehaviour
         label.SetActive(true);
     }
 
-    public void OnHoverEnd(BaseEventData eventData)
-    {
+    public void OnHoverEnd(BaseEventData eventData) {
         Debug.Log("Hover End");
         label.SetActive(false);
     }
