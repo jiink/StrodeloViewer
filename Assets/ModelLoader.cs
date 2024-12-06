@@ -11,12 +11,17 @@ using TriLibCore.Interfaces;
 using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
 using System.Threading.Tasks;
+using System.IO;
 
 public class ModelLoader : MonoBehaviour
 {
     private GameObject modelTemplatePrefab;
     private GameObject cubeVisualizerPrefab;
     private UnityEngine.Material occlusionFriendlyLit;
+    private GameObject modelLoadingIndicator;
+
+    private GameObject currentModelLoadingIndicator;
+
     internal void OnFileReceived(object sender, EventArgs e)
     {
         Receiver receiver = sender as Receiver;
@@ -34,6 +39,12 @@ public class ModelLoader : MonoBehaviour
     {
         Debug.Log($"Importing file: {filePath}");
 
+        // Spawn a model loading indicator that will be destroyed when the model is done loading
+        currentModelLoadingIndicator = Instantiate(modelLoadingIndicator);
+        currentModelLoadingIndicator.transform.position = UnityEngine.Camera.main.transform.position +
+                                         (UnityEngine.Camera.main.transform.forward * 0.3f);
+        currentModelLoadingIndicator.GetComponent<ModelLoadingIndicator>().ModelName = Path.GetFileName(filePath);
+
         var tcs = new TaskCompletionSource<GameObject>();
         AssetLoader.LoadModelFromFile(filePath,
             (assetLoaderContext) => // when model is done loading
@@ -43,12 +54,14 @@ public class ModelLoader : MonoBehaviour
                 if (loadedModel != null)
                 {
                     var loadedRoot = ProcessLoadedModel(loadedModel, filePath);
+                    Destroy(currentModelLoadingIndicator);
                     StrodeloCore.Instance.SpawnNotification("Model loaded!");
                     tcs.SetResult(loadedRoot);
                 }
                 else
                 {
                     Debug.LogError("Failed to retrieve the loaded model.");
+                    Destroy(currentModelLoadingIndicator);
                     tcs.SetResult(null);
                 }
             },
@@ -61,6 +74,7 @@ public class ModelLoader : MonoBehaviour
             {
                 Debug.LogError($"Failed to load model: {error}");
                 StrodeloCore.Instance.SpawnNotification("Failed to load model: " + error);
+                Destroy(currentModelLoadingIndicator);
                 tcs.SetResult(null);
             });
         return await tcs.Task;
@@ -163,6 +177,7 @@ public class ModelLoader : MonoBehaviour
         modelTemplatePrefab = Resources.Load<GameObject>("LoadedModelTemplate");
         cubeVisualizerPrefab = Resources.Load<GameObject>("LineCube");
         occlusionFriendlyLit = Resources.Load<UnityEngine.Material>("OcclusionCompatibleLit");
+        modelLoadingIndicator = Resources.Load<GameObject>("ModelLoadingIndicator");
     }
 
     void Update()
