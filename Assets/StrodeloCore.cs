@@ -605,6 +605,7 @@ public class StrodeloCore : MonoBehaviour
         {
             ApplyEnvironmentMap(fileBrowser.FullFilePath);
             currentEnvironmentMapPath = fileBrowser.FullFilePath; // so it can be saved to json later
+            Destroy(fileBrowserO);
         };
     }
 
@@ -722,6 +723,7 @@ public class StrodeloCore : MonoBehaviour
         fileBrowser.FileOpen += (sender, e) =>
         {
             modelLoader.ImportAndCreateMeshes(fileBrowser.FullFilePath);
+            Destroy(fileBrowserO);
         };
     }
 
