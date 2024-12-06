@@ -602,6 +602,7 @@ GameObject:
   - component: {fileID: 2757060311663630197}
   - component: {fileID: 1132502978930628148}
   - component: {fileID: 4079033891800902063}
+  - component: {fileID: 7170025264634926194}
   m_Layer: 0
   m_Name: HandMenu
   m_TagString: Untagged
@@ -662,6 +663,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backwards: 0
+--- !u!114 &7170025264634926194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5460104758188156816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98c98c657feb956428aa12a4b798bde6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _themes:
+  - {fileID: 11400000, guid: dcb21e1310a1a264bb83deaf46b90637, type: 2}
+  - {fileID: 11400000, guid: 4b2fdc959511e154cb98df0433028c9b, type: 2}
+  _currentThemeIndex: 0
 --- !u!1 &7674820319456975912
 GameObject:
   m_ObjectHideFlags: 0
