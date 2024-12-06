@@ -647,8 +647,8 @@ MonoBehaviour:
   debugOutput: {fileID: 58690149773809471}
   buttonsParent: {fileID: 3069130908020478737}
   instructionBoard: {fileID: 4466967585965756827}
-  isLeftHandAvailableForMenu: 1
-  isRightHandAvailableForMenu: 1
+  isLeftHandAvailableForMenu: 0
+  isRightHandAvailableForMenu: 0
 --- !u!114 &4079033891800902063
 MonoBehaviour:
   m_ObjectHideFlags: 0

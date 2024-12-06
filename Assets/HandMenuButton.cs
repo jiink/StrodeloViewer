@@ -16,9 +16,12 @@ public class HandMenuButton : MonoBehaviour
     private Image bgImageComponent;
 
     private Action clickAction;
+    public event EventHandler hover;
+    public event EventHandler hoverEnd;
 
     void Start()
     {
+        tooltip.SetActive(false);
         bgImageComponent = GetComponent<UnityEngine.UI.Image>();
         if (bgImageComponent == null)
         {
@@ -31,12 +34,16 @@ public class HandMenuButton : MonoBehaviour
     {
         bgImageComponent.sprite = hoverBg;
         tooltip.SetActive(true);
+        gameObject.transform.SetAsLastSibling();
+        hover?.Invoke(this, EventArgs.Empty);
     }
 
     public void OnHoverEnd(BaseEventData eventData)
     {
         bgImageComponent.sprite = normalBg;
         tooltip.SetActive(false);
+        gameObject.transform.SetAsFirstSibling();
+        hoverEnd?.Invoke(this, EventArgs.Empty);
     }
 
     public void SetData(HButtonEntry hButtonEntry)
