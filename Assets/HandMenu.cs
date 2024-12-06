@@ -14,7 +14,7 @@ public class HandMenu : MonoBehaviour
     public Hand rightHand;
     public float distFromPalm = 0.15f;
     public float distFromFace = 0.1f;
-    public TextMeshPro debugOutput;
+    public TextMeshProUGUI debugOutput;
     public Transform buttonsParent;
     public TextMeshProUGUI instructionBoard;
     private Camera mainCamera;
