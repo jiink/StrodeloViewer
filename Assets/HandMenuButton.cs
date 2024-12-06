@@ -4,39 +4,50 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class HandMenuButton : MonoBehaviour
 {
-    public GameObject icon;
-    public GameObject label;
+    public Image icon;
+    public GameObject tooltip;
+    public TextMeshProUGUI label;
+    public Sprite hoverBg;
+    private Sprite normalBg;
+    private Image bgImageComponent;
 
     private Action clickAction;
 
     void Start()
     {
-        label.SetActive(false);
-    }
-
-    void Update()
-    {
-        
+        bgImageComponent = GetComponent<UnityEngine.UI.Image>();
+        if (bgImageComponent == null)
+        {
+            Debug.LogError("HandMenuButton must have an Image component");
+        }
+        normalBg = bgImageComponent.sprite;
     }
 
     public void OnHover(BaseEventData eventData)
     {
-        Debug.Log("Hovering");
-        label.SetActive(true);
+        bgImageComponent.sprite = hoverBg;
+        tooltip.SetActive(true);
     }
 
-    public void OnHoverEnd(BaseEventData eventData) {
-        Debug.Log("Hover End");
-        label.SetActive(false);
+    public void OnHoverEnd(BaseEventData eventData)
+    {
+        bgImageComponent.sprite = normalBg;
+        tooltip.SetActive(false);
     }
 
     public void SetData(HButtonEntry hButtonEntry)
     {
-        label.GetComponent<TextMeshProUGUI>().text = hButtonEntry.Name;
-        icon.GetComponent<UnityEngine.UI.Image>().sprite = hButtonEntry.Icon;
+        icon.GetComponent<Image>().sprite = hButtonEntry.Icon;
+        label.text = hButtonEntry.Name;
         clickAction = hButtonEntry.OnClick;
+    }
+
+    public void OnClick()
+    {
+        clickAction();
     }
 }

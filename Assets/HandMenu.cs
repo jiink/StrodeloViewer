@@ -39,20 +39,22 @@ public class HandMenu : MonoBehaviour
         // Define data for all buttons
         hButtonEntries = new HButtonEntry[]
         {
-            new("Load 3D model", null, StrodeloCore.Instance.LoadLocal3DModelAct),
-            new("Place on Surface", null, StrodeloCore.Instance.PlaceOnSurfaceAct),
-            new("Delete", null, StrodeloCore.Instance.DeleteThingAct),
-            new("Debug", null, StrodeloCore.Instance.DebugButtonPressed),
-            new("Inspect Material", null, StrodeloCore.Instance.InspectMaterialAct),
-            new("Add Point Light", null, StrodeloCore.Instance.AddPointLightAct),
-            new("Add Directional Light", null, StrodeloCore.Instance.AddDirectionalLightAct),
-            new("Edit Light", null, StrodeloCore.Instance.EditLightAct),
-            new("(Un)lock Rotation", null, StrodeloCore.Instance.LockRotationToggleAct),
-            new("Toggle Occlusion", null, StrodeloCore.Instance.ToggleOcclusionAct),
-            new("Reflection Map", null, StrodeloCore.Instance.ReflectionMapAct),
-            new("Save Setup", null, StrodeloCore.Instance.SaveSetupAct),
-            new("Load Setup", null, StrodeloCore.Instance.LoadSetupAct),
-            new("Exit", null, StrodeloCore.Instance.ExitAct)
+            new("Exit", "exit", StrodeloCore.Instance.ExitAct),
+            new("Load 3D model", "folder", StrodeloCore.Instance.LoadLocal3DModelAct),
+            new("Inspect Material", "inspect", StrodeloCore.Instance.InspectMaterialAct),
+            new("Place on Surface", "surface", StrodeloCore.Instance.PlaceOnSurfaceAct),
+            new("(Un)lock Rotation", "rotation_lock", StrodeloCore.Instance.LockRotationToggleAct),
+            new("Delete", "x", StrodeloCore.Instance.DeleteThingAct),
+
+            new("Toggle Occlusion", "occlusion", StrodeloCore.Instance.ToggleOcclusionAct),
+            new("Add Point Light", "pointlight", StrodeloCore.Instance.AddPointLightAct),
+            new("Add Directional Light", "sun_sharp", StrodeloCore.Instance.AddDirectionalLightAct),
+            new("Edit Light", "light_edit", StrodeloCore.Instance.EditLightAct),
+            new("Reflection Map", "mirror", StrodeloCore.Instance.ReflectionMapAct),
+            new("Global lighting", "globe", StrodeloCore.Instance.DebugButtonPressed), // debug button disguised as a feature
+            
+            new("Save Setup", "save", StrodeloCore.Instance.SaveSetupAct),
+            new("Load Setup", "load", StrodeloCore.Instance.LoadSetupAct),
         };
         InitializeButtons(hButtonEntries, handMenuButtonPrefab, buttonsParent);
 
@@ -66,9 +68,23 @@ public class HandMenu : MonoBehaviour
     // Spawns the buttons and hooks up the events
     private void InitializeButtons(HButtonEntry[] hButtonEntries, GameObject btemplate, Transform parent)
     {
-        for (int i = 0; i < hButtonEntries.Length; i++)
+        // The parent has a bunch of placeholders in it which define the button positions.
+        List<Vector3> bPoses = new List<Vector3>();
+        foreach (Transform child in parent)
+        {
+            bPoses.Add(child.position);
+            Destroy(child.gameObject);
+        }
+        if (hButtonEntries.Length > bPoses.Count)
+        {
+            Debug.LogError("Not enough button positions in the parent transform.");
+        }
+        int count = Math.Min(hButtonEntries.Length, bPoses.Count);
+        for (int i = 0; i < count; i++)
         {
             GameObject newButton = Instantiate(btemplate, parent);
+            var rt = newButton.GetComponent<RectTransform>();
+            rt.position = bPoses[i];
             HandMenuButton hmb = newButton.GetComponent<HandMenuButton>();
             hmb.SetData(hButtonEntries[i]);
         }
@@ -156,23 +172,21 @@ public class HandMenu : MonoBehaviour
     }
 
     // The following functions are so the SelectorUnityEventWrappers can call them.
-    public void SetLeftHandAvailableForMenuFalse()
+    public void SetLeftHandAvailableForMenu(bool b)
     {
-        isLeftHandAvailableForMenu = false;
-        Debug.Log("LF");
+        isLeftHandAvailableForMenu = b;
+        //if (b)
+        //{
+        //    Debug.Log("LT");
+        //}
+        //else
+        //{
+        //    Debug.Log("LF");
+        //}
     }
-    public void SetLeftHandAvailableForMenuTrue()
+    public void SetRightHandAvailableForMenu(bool b)
     {
-        isLeftHandAvailableForMenu = true;
-        Debug.Log("LT");
-    }
-    public void SetRightHandAvailableForMenuFalse()
-    {
-        isRightHandAvailableForMenu = false;
-    }
-    public void SetRightHandAvailableForMenuTrue()
-    {
-        isRightHandAvailableForMenu = true;
+        isRightHandAvailableForMenu = b;
     }
 
     // It's super frustrating to interact with a menu that follows your hands,
@@ -194,6 +208,13 @@ public struct HButtonEntry
     {
         Name = name;
         Icon = icon;
+        OnClick = onClick;
+    }
+
+    public HButtonEntry(string name, string iconPath, Action onClick)
+    {
+        Name = name;
+        Icon = Resources.Load<Sprite>($"Icons/{iconPath}");
         OnClick = onClick;
     }
 }
