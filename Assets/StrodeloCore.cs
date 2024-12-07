@@ -422,9 +422,8 @@ public class StrodeloCore : MonoBehaviour
     }
 
     // Spawns a menu, and returns the menu it spawned
-    internal GameObject SpawnMenu(GameObject menuPrefab)
+    internal GameObject SpawnMenu(GameObject menuPrefab, float spawnDistance = 0.5f)
     {
-        float spawnDistance = 0.5f;
         Transform userTransform = _cameraRig.centerEyeAnchor;
         Vector3 spawnPos = userTransform.position + userTransform.forward * spawnDistance;
         // face the menu towards the user
@@ -714,7 +713,7 @@ public class StrodeloCore : MonoBehaviour
 
     public void SpawnNotification(string message)
     {
-        GameObject notification = SpawnMenu(notificationPrefab);
+        GameObject notification = SpawnMenu(notificationPrefab, 0.08f);
         notification.GetComponent<StrodeloNotification>().Message = message;
     }
 
