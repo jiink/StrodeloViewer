@@ -1054,6 +1054,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2a4ec1c553919448f897e84a7c310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1081449772 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 132536, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
+  m_PrefabInstance: {fileID: 953263899}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1368751689
 GameObject:
   m_ObjectHideFlags: 0
@@ -1340,6 +1345,7 @@ MonoBehaviour:
   handPassthroughMaterial: {fileID: 2100000, guid: d5e2ab92e53f69e40a760f658d55cb3d, type: 2}
   handStandardMaterial: {fileID: 2100000, guid: d641a50c4fe4ee3489a64cf52b76ae79, type: 2}
   environmentDepthManager: {fileID: 1368751693}
+  debugConsole: {fileID: 1081449772}
 --- !u!4 &1705143079
 Transform:
   m_ObjectHideFlags: 0
