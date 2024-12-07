@@ -16,7 +16,7 @@ PlayerSettings:
   productName: Strodelo
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
-  m_SplashScreenBackgroundColor: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 0}
+  m_SplashScreenBackgroundColor: {r: 0.07398576, g: 0.03858135, b: 0.16037738, a: 0}
   m_ShowUnitySplashScreen: 1
   m_ShowUnitySplashLogo: 1
   m_SplashScreenOverlayOpacity: 0.5
