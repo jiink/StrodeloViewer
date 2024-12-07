@@ -30,6 +30,8 @@ public class StrodeloCore : MonoBehaviour
     public Material handPassthroughMaterial; // For when occlusion is enabled, hand is masked out
     public Material handStandardMaterial; // For when occlusion is off
     public EnvironmentDepthManager environmentDepthManager; // Handles occlusion
+    public GameObject debugConsole;
+    const bool HIDE_DEBUG_CONSOLE = true;
 
     private GameObject notificationPrefab;
     private GameObject lightEditMenuPrefab;
@@ -120,6 +122,11 @@ public class StrodeloCore : MonoBehaviour
 
         // Update lighting situation so metallic things dont look pitch black
         ApplyDefaultEnvMap();
+
+        if (HIDE_DEBUG_CONSOLE)
+        {
+            debugConsole.SetActive(false);
+        }
     }
 
     void Update()
@@ -371,9 +378,16 @@ public class StrodeloCore : MonoBehaviour
 
     internal void DebugButtonPressed()
     {
-        debugNum++;
-        SpawnFakeLoadedModel();
-        SpawnNotification("Debug button pressed " + debugNum + " times.");
+        if (!debugConsole.activeSelf)
+        {
+            debugConsole.SetActive(true);
+        }
+        else
+        {
+            debugNum++;
+            SpawnFakeLoadedModel();
+            SpawnNotification("Debug button pressed " + debugNum + " times.");
+        }
     }
 
     internal GameObject SpawnMaterialInspector(GameObject inspectedObj)
