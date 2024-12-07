@@ -727,7 +727,7 @@ public class StrodeloCore : MonoBehaviour
 
     public void SpawnNotification(string message)
     {
-        GameObject notification = SpawnMenu(notificationPrefab, 0.08f);
+        GameObject notification = SpawnMenu(notificationPrefab, 0.14f);
         notification.GetComponent<StrodeloNotification>().Message = message;
     }
 
