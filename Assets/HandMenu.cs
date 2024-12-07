@@ -63,6 +63,7 @@ public class HandMenu : MonoBehaviour
         {
             Debug.LogError("HandMenu needs a FaceUser component to work properly.");
         }
+        instructionBoard.text = string.Empty;
     }
 
     // Spawns the buttons and hooks up the events

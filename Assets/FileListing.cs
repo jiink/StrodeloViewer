@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class FileListing : MonoBehaviour
 {
+    public Sprite fileIcon;
+    public Sprite folderIcon;
+    public Image iconComponent;
     public Image buttonBackground;
     public TextMeshProUGUI text;
     public Material highlightMaterial;

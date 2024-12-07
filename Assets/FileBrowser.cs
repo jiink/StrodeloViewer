@@ -55,12 +55,14 @@ public class FileBrowser : MonoBehaviour
                     {
                         CurrentPath = Path.Combine(CurrentPath, fileListing.FileName);
                     };
+                    fileListing.iconComponent.sprite = fileListing.folderIcon;
                 }
                 else
                 {
                     // It's a file
                     // Subscribe to event so we know when button is pressed
                     fileListing.Selected += onFileListingSelected;
+                    fileListing.iconComponent.sprite = fileListing.fileIcon;
                 }
                 
                 
