@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class StrodeloCore : MonoBehaviour
@@ -381,14 +382,15 @@ public class StrodeloCore : MonoBehaviour
         var materialInspector = m.GetComponent<MaterialInspectorMenu>();
 
         // Find the MeshRenderer in the children of the inspected object
-        MeshRenderer meshRenderer = FindMeshRendererInChildren(inspectedObj);
-        if (meshRenderer != null)
-        {
-            materialInspector.InspectedModel = meshRenderer.gameObject;
+        //MeshRenderer meshRenderer = FindMeshRendererInChildren(inspectedObj);
+        int numRenderers = inspectedObj.GetComponentsInChildren<MeshRenderer>().Length;
+        if (numRenderers > 0)
+        { 
+            materialInspector.InspectedObject = inspectedObj;
         }
         else
         {
-            Debug.LogError("No MeshRenderer found in the inspected object or its children.");
+            Debug.LogError("No MeshRenderers found in the inspected object or its children.");
         }
 
         return m;

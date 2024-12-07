@@ -1,25 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
 
 public class MaterialInspectorMenu : MonoBehaviour
 {
-    private GameObject _inspectedModel;
-    public GameObject InspectedModel
+    private GameObject _inspectedObject;
+    public GameObject InspectedObject
     {
         get
         {
-            return _inspectedModel;
+            return _inspectedObject;
         }
         set
         {
-            _inspectedModel = value;
-            if (_inspectedModel != null)
+            _inspectedObject = value;
+            if (_inspectedObject != null)
             {
-                gameObjectNameLabel.text = _inspectedModel.name;
-                AddMaterialEntries(_inspectedModel);
+                gameObjectNameLabel.text = _inspectedObject.name;
+                AddMaterialEntries(_inspectedObject);
             }
         }
     }
@@ -37,30 +38,28 @@ public class MaterialInspectorMenu : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-
-    }
-
-    // Add all materials from the model to the menu
+    // Add all materials from the object to the menu
     void AddMaterialEntries(GameObject model)
     {
-        // Remove what's already there
+        // Clean existing entries
         foreach (Transform child in materialListingsParent)
         {
             Destroy(child.gameObject);
         }
-        Renderer renderer = _inspectedModel.GetComponent<Renderer>();
-        if (renderer != null)
+        Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
+        if (renderers.Count() > 0)
         {
-            Material[] materialsArray = renderer.materials;
-            List<Material> materials = new List<Material>(materialsArray);
-            // Process the materials list as needed
-            for (int i = 0; i < materialsArray.Length; i++)
+            foreach (Renderer renderer in renderers)
             {
-                MaterialListing materialListing = Instantiate(materialListingPrefab, materialListingsParent).GetComponent<MaterialListing>();
-                materialListing.MaterialNumber = i;
-                materialListing.Material = materialsArray[i];
+                Material[] materialsArray = renderer.materials;
+                List<Material> materials = new List<Material>(materialsArray);
+                // Process the materials list as needed
+                for (int i = 0; i < materialsArray.Length; i++)
+                {
+                    MaterialListing materialListing = Instantiate(materialListingPrefab, materialListingsParent).GetComponent<MaterialListing>();
+                    materialListing.MaterialNumber = i;
+                    materialListing.Material = materialsArray[i];
+                }
             }
         }
     }
