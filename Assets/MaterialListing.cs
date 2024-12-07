@@ -56,6 +56,18 @@ public class MaterialListing : MonoBehaviour
         Material.SetFloat("_Glossiness", value);
     }
 
+    public void SetHue(float h)
+    {
+        Color.RGBToHSV(Material.color, out _, out float s, out float v);
+        Material.color = Color.HSVToRGB(h, s, v);
+    }
+
+    public void SetSaturation(float s)
+    {
+        Color.RGBToHSV(Material.color, out float h, out _, out float v);
+        Material.color = Color.HSVToRGB(h, s, v);
+    }
+
     void Start()
     {
         _fileBrowserPrefab = Resources.Load<GameObject>("FileBrowser Variant");
