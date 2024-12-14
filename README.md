@@ -10,7 +10,7 @@ View 3D models in mixed reality on the Quest 3 or 3S. A Unity project.
 Designed to work with the [Strodelo Companion](https://github.com/jiink/StrodeloCompanion) app.
 
 ## Quick Start
-1. Download the apk file from the latest (pre)release from [the Releases section](https://github.com/jiink/StrodeloViewer/releases/tag/prerelease)
+1. Download the apk file from the latest (pre)release from [the Releases section](https://github.com/jiink/StrodeloViewer/releases)
 2. Install the apk on your Quest 3. One way to do this is via [SideQuest's "Advanced Installer"](https://sidequestvr.com/setup-howto)
 3. Make sure you have run space setup in the Quest's options menu if you haven't already. 
 4. Find the app in your Quest by going to your apps library and filtering by "Unknown Sources".
