@@ -11,8 +11,9 @@ Designed to work with the [Strodelo Companion](https://github.com/jiink/Strodelo
 
 ## Quick Start
 1. Download the apk file from the latest (pre)release from [the Releases section](https://github.com/jiink/StrodeloViewer/releases)
-2. Install the apk on your Quest 3. One way to do this is via [SideQuest's "Advanced Installer"](https://sidequestvr.com/setup-howto)
-3. Make sure you have run space setup in the Quest's options menu if you haven't already. 
+2. Install the apk on your Quest 3. One way to do this is via [SideQuest's "Advanced Installer"](https://sidequestvr.com/setup-howto). After installing that app, you can plug in your Quest 3 into your computer, then click the "Install APK file from folder on your computer" button in the top toolbar. 
+3. Make sure you have run space setup in the Quest's options menu if you haven't already. ![image](https://github.com/user-attachments/assets/bf840d7c-db8b-45d4-b423-c794d33ae25d)
+
 4. Find the app in your Quest by going to your apps library and filtering by "Unknown Sources".
 5. Open your palm towards you with your fingers pointing straight out to reveal a hand menu.
 6. Import 3D models using one of the buttons in the hand menu, or pair your Quest with the [Strodelo Companion](https://github.com/jiink/StrodeloCompanion) to send 3D model files from your PC.
