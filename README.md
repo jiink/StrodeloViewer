@@ -20,3 +20,6 @@ Designed to work with the [Strodelo Companion](https://github.com/jiink/Strodelo
 
 ## Building from Source
 As of December 2024, this project uses Unity 2022.3.48f1. Before you attempt to build or run this project in Unity, you must acquire [TriLib 2](https://ricardoreis.net/trilib-2/) because Strodelo relies on it for model importing functionality. It is not included in this project because it is a [paid asset on the Unity Asset Store](https://assetstore.unity.com/packages/tools/modeling/trilib-2-model-loading-package-157548). 
+
+## Contributors
+This project was developed by Jacob Carlson, Puthioudom Chum, Luis Dominguez, and Tri Bui for our senior capstone project.
